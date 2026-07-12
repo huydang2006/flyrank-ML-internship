@@ -98,6 +98,11 @@ Keep this file open while you work.
 | `position_tier` | `no_data`, `top_3`, `page_1`, `striking`, `page_3_5`, `deep` | avg position ≤ 3 / ≤ 10 / ≤ 20 / ≤ 50 / > 50 |
 | `trend_direction` | `new`, `flat`, `up`, `down`, `stable` | last-30d vs prev-30d impressions: `new` = prev 0 & last > 0; `flat` = both 0; `up` > +20%; `down` < −20%; else `stable`. **Label source — never a feature** |
 
+> **Heads-up about `top_3`:** these pages rank best but most get almost no searches (median: 53
+> impressions in 90 days). With numbers that small, one extra click swings CTR by ~2 percentage
+> points — so a "0.00% CTR" there is small-sample noise, not a broken page. Before comparing any
+> rate, ask: are there enough impressions for this rate to mean anything?
+
 ## Columns the prep step adds (44 → 52 in `refresh_feature_vector.csv`)
 
 `scripts/01_prepare_features.py` fills blanks (numerics → 0, categoricals → `"unknown"`) and adds:

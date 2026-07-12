@@ -15,7 +15,12 @@ question to the rows.** Aggregate in SQL, bring back only the small answer, mode
 import duckdb
 con = duckdb.connect()
 # remote Parquet reads like a local table:
-REL = "read_parquet('hf://datasets/<org>/<name>/<table>/**/*.parquet')"
+# Look at the dataset's "Files" tab on Hugging Face first — tables ship in two shapes:
+#   a single file:     'hf://datasets/<org>/<name>/<table>.parquet'
+#   a folder of files: 'hf://datasets/<org>/<name>/<table>/**/*.parquet'
+# Using the folder pattern on a single-file table fails with a confusing HTTP 404.
+# ({a,b} brace patterns don't work on hf:// — pass a plain list of paths instead.)
+REL = "read_parquet('hf://datasets/<org>/<name>/<table>/**/*.parquet')"  # match the shape you saw
 small = con.sql(f"""
     SELECT group_col, SUM(metric) AS total, COUNT(*) AS n
     FROM {REL}

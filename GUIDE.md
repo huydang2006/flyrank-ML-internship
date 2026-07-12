@@ -153,3 +153,12 @@ copy. Check `docs/data-dictionary.md` first so you don't leak the label.
 **Can I put the mentor-provided warehouse release in this repo?**
 No. It stays outside git entirely (CI fails any committed CSV anyway). Work with it locally
 and commit only code, aggregates, and write-ups — see `DATA_USE.md`.
+
+**The starter repo got a fix after I made my copy — how do I get it?**
+Your copy doesn't update itself. Run these three commands inside your repo folder:
+```bash
+git remote add upstream https://github.com/flyrank-bih/flyrank-ml-internship-starter
+git fetch upstream
+git merge upstream/main
+```
+Your own work is safe — the starter never touches your `work/` folder.
