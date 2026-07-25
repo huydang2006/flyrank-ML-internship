@@ -1,8 +1,8 @@
-# Capstone Report — <your lane>
+# Capstone Report — <CTR / Engagement Opportunity Scoring>
 
-- **Author:**
-- **Lane:**
-- **Repo:**
+- **Author:** Mai Huy Đăng
+- **Lane:** 4 (CTR / Engagement Opportunity Scoring)
+- **Repo:** https://github.com/huydang2006/flyrank-ML-internship
 - **Date:**
 
 > Copy this file to `work/capstone_report.md` and fill it in as you build. Sections 1–8
@@ -20,6 +20,22 @@ what the output is for. This is the top of your deployed paper.
 What decision does this support? Name the unit of analysis (page, client, day…), the output
 (score, rank, cluster, report), the action a human takes from it, and the cost of a wrong
 call. Why does data/ML help here at all?
+
+======
+
+**Decision supported:** Which visible pages are under-capturing clicks relative to others in the same search position tier, and are worth review for content or metadata improvement?
+
+**Unit of analysis:** Individual content pages (one row per pseudonymized content item in the starter dataset).
+
+**Output:** A ranked list of CTR underperformers with reason codes (high_impressions, very_low_ctr, weak_engagement) and recommend actions.
+
+**Action:** Content reviewers, SEO strategists, or editors with a fixed weekly audit budget use the ranked list to allocate review effort — top candidates get metadata/content improvement actions (rewrite title/meta, improve intent match, improve engagement).
+
+**Cost of a wrong call:**
+- **False positive:** Reviewer wastes time auditing a low-volume page (e.g., 100 trailing impressions). Even if CTR is low, the volume is noise. Wasted effort.
+- **False negative:** Missing a high-potential page (e.g., ~5,000 impressions at `page_1` with 0.01% CTR vs 0.23% expected). The gap suggests a fixable title/meta problem. If missed, 5,000 impressions stay uncaptured — real opportunity cost.
+
+**Why data/ML helps:** A plain rule like "flag pages with CTR < 0.1%" catches noise and misses context. Ranking by position alone misses tier-specific underperformers. Ranking by impressions alone ignores position context. A tier-adjusted analysis calculates expected CTR *by position tier*, then flags pages that sit far below their tier's median — this is the signal that a simple if-statement cannot capture.
 
 ## 2. Data safety
 
@@ -66,6 +82,10 @@ your repo, not taken on faith.
 One short section at the bottom of the deployed paper: "Built on the FlyRank ML Internship
 dataset" **linking to https://flyrank.ai**. Crediting your data source is standard research
 practice — and it's on the capstone's required-section list, so a paper without it isn't done.
+
+======
+
+Built on the FlyRank ML Internship dataset — https://flyrank.ai
 
 ---
 
