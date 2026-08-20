@@ -32,7 +32,7 @@ a{color:inherit}
   height:calc(100vh - 62px)}
 .pane{overflow-y:auto;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.45);background:#fff;position:relative}
 .pane .door-tag{position:sticky;top:0;z-index:10;display:block;padding:7px 16px;
-  font:700 11px 'Space Mono',ui-monospace,monospace;letter-spacing:.14em}
+  font:700 12px 'Space Mono',ui-monospace,monospace;letter-spacing:.14em}
 .pane1 .door-tag{background:#0d2a5e;color:#bcd3ff}
 .pane2 .door-tag{background:#123524;color:#a7f3c9}
 .pane3 .door-tag{background:#4a2c08;color:#fcd9a8}
@@ -48,7 +48,7 @@ svg{width:100%;height:auto;display:block}
 .p1{max-width:100%;padding:34px 44px 60px;background:#fdfdfb;color:#161a22;
   font:17px/1.62 'Source Serif 4',Georgia,serif}
 .p1-head{border-bottom:2px solid #161a22;padding-bottom:18px;margin-bottom:22px}
-.p1-venue{font:600 11px/1.4 Inter,sans-serif;letter-spacing:.12em;color:#5a6472;margin:0 0 12px}
+.p1-venue{font:600 12px/1.45 Inter,sans-serif;letter-spacing:.12em;color:#5a6472;margin:0 0 12px}
 .p1 h1{font:700 27px/1.25 'Source Serif 4',Georgia,serif;margin:0 0 10px;letter-spacing:-.01em}
 .p1-byline{font:14px/1.5 Inter,sans-serif;color:#5a6472;margin:0}
 .p1 h2{font:700 19px/1.3 'Source Serif 4',Georgia,serif;margin:30px 0 10px;color:#0d2a5e}
@@ -173,20 +173,44 @@ svg{width:100%;height:auto;display:block}
 .p3-credit{font-size:15px;color:#4b5563}
 .p3 a{color:#0d9488}
 
+/* ── responsive: no paper may ever push the page sideways ─────────────────── */
 @media (max-width:1180px){
-  .stage{grid-template-columns:1fr;height:auto}
-  .pane{max-height:none;overflow:visible}
+  .stage{grid-template-columns:minmax(0,1fr);height:auto}
+  .pane{min-width:0;max-height:none;overflow:visible}
+  body[data-view="d1"] .stage,body[data-view="d2"] .stage,body[data-view="d3"] .stage{
+    grid-template-columns:minmax(0,1fr)}
+  /* grid/flex children default to min-content width; that is what forced the overflow */
+  .p1 *,.p2 *,.p3 *{min-width:0}
+  .p1-repro{grid-template-columns:minmax(0,1fr)}
+  .p1 table,.p2 table{display:block;max-width:100%;overflow-x:auto}
+  .p1 pre,.p2-repro pre{white-space:pre-wrap;word-break:break-word;max-width:100%;box-sizing:border-box}
+  .p1 img,.p2 img,.p3 img,.p1 svg,.p2 svg,.p3 svg{max-width:100%;height:auto}
+  .p1 p{text-align:left}
 }
 @media (max-width:700px){
-  .chrome{position:static;padding:12px 14px}.tabs{margin-left:0;width:100%;overflow-x:auto}
-  .stage{padding:8px}.p1{padding:26px 22px 44px}.p1-repro{grid-template-columns:1fr}
-  .p1 p{text-align:left}
-  .p1 section,.p1-repro>*{min-width:0}
-  .p1 table{display:block;max-width:100%;overflow-x:auto}
-  .p1 pre{max-width:100%;box-sizing:border-box}
-  .p2-hero,.p2 section{padding-left:22px;padding-right:22px}.p2 h1{font-size:32px}
-  .p2-demo-row{grid-template-columns:36px 1fr}.p2-act,.p2-score{grid-column:2}
-  .p3>*{padding-left:22px;padding-right:22px}.p3-tldr dl{grid-template-columns:1fr}
+  .chrome{position:static;padding:12px 14px}
+  .chrome h1{font-size:15px}.chrome .inv{font-size:12px}
+  .tabs{margin-left:0;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tabs button{white-space:nowrap;padding:8px 13px}
+  .stage{padding:8px;gap:10px}
+  .pane .door-tag{padding:7px 12px;font-size:12px;line-height:1.4}
+  .p1{padding:24px 18px 40px;font-size:16.5px}
+  .p1 h1{font-size:23px}.p1 h2{font-size:18px}
+  .p1 caption,.p1 figcaption,.p1 pre{font-size:13px}
+  .p2-hero{padding:30px 18px 26px}.p2 section{padding-left:18px;padding-right:18px}
+  .p2 h1{font-size:29px}.p2-prop{font-size:17px}.p2-num{font-size:40px}
+  .p2-metric{flex-wrap:wrap}.p2-cta{flex-direction:column;align-items:stretch}
+  .btn{text-align:center}
+  .p2-june{padding:20px 18px!important;margin-left:8px!important;margin-right:8px!important}
+  .p2-demo-row{grid-template-columns:34px minmax(0,1fr)}
+  .p2-act,.p2-score{grid-column:2;justify-self:start}
+  .p3{font-size:17px}.p3>*{padding-left:18px;padding-right:18px}
+  .p3 h1{font-size:26px}.p3-deck{font-size:17.5px}
+  .p3-tldr{padding:16px 18px}.p3-tldr dl{grid-template-columns:minmax(0,1fr);gap:4px 0}
+  .p3-tldr dt{margin-top:8px}
+  .p3-keychart,.p3 figure{padding:12px}
+  .p3-toc{gap:6px 10px;font-size:13px}
+  .p3-action{padding:14px 16px}
 }
 </style>
 </head>
