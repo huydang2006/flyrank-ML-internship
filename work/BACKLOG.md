@@ -3,6 +3,14 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T01:30:00+07:00 — Clarify notebook answer-cell workflow
+
+- Updated `CODING_INSTRUCTIONS.md` so notebook template prompts remain intact while
+  written answers are added in new markdown cells between each prompt and its code cell.
+- Files changed: `CODING_INSTRUCTIONS.md`, `work/BACKLOG.md`.
+- Verification: reviewed the diff and ran `git diff --check`.
+- Remaining limitations: none; this change affects workflow guidance only.
+
 ## 2026-09-10T16:05:00+07:00 — ML-05 feature-vector and leakage audit
 
 - Changed the ML-04 contract to use the intended 90-day feature window (`2026-01-01` through `2026-03-31`) and corrected the future-CTR denominator guard to `NULLIF(..., 0)`.

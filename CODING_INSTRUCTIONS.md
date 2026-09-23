@@ -14,9 +14,12 @@ Use this file when starting a new coding or notebook session in this repository.
    implemented. Inspect the current git status before editing.
 5. Work on one task per conversation. If the scope is unclear or a design choice
    materially changes the result, ask one focused question before coding.
-6. Keep notebook templates intact. Do not edit notebook markdown cells; the only
-   exceptions are comments in template code cells and checking the self-check
-   boxes at the end. The ML-05 markdown is intentionally a hand-written template.
+6. Keep notebook template markdown cells intact. Do not rewrite or delete the
+   supplied prompts. When a notebook needs written answers, add a new markdown
+   answer cell directly below the relevant template markdown cell and before its
+   code cell. The only edits allowed inside supplied markdown cells are checking
+   the final self-check boxes. The ML-05 markdown is intentionally a hand-written
+   template.
 
 ## While working
 
