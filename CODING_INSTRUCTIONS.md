@@ -18,8 +18,7 @@ Use this file when starting a new coding or notebook session in this repository.
    supplied prompts. When a notebook needs written answers, add a new markdown
    answer cell directly below the relevant template markdown cell and before its
    code cell. The only edits allowed inside supplied markdown cells are checking
-   the final self-check boxes. The ML-05 markdown is intentionally a hand-written
-   template.
+   the final self-check boxes.
 
 ## While working
 
