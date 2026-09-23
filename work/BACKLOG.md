@@ -11,6 +11,14 @@ do not rewrite history. Use local time with an explicit offset.
 - Verification: reviewed the rewritten checklist and ran `git diff --check`.
 - Remaining limitations: ML-06 notebook implementation and execution are still pending.
 
+## 2026-09-24T01:55:00+07:00 ? Complete ML-06 signal audit
+
+- Implemented the warehouse-backed ML-06 notebook with distribution checks, three signal tests, sample-size floors, denominator-safe pooled rates, a second-window stability check, and explicit pre-origin/source guards.
+- Results: position tier vs pooled CTR was `CONFIRMED`; impression volume vs CTR spread was `MIXED`; the `measurable_opportunity` flag was `MIXED` because its session requirement depends on GA4 availability.
+- Files changed: `work/notebooks/w04_signal_audit.ipynb`, `work/TODO.md`, `work/BACKLOG.md`.
+- Verification: notebook JSON parsing, Python compilation of all code cells, `git diff --check`, and two successful top-to-bottom notebook executions against the warehouse. The final run confirmed 78,835,655 source rows from 2025-01-27 through 2026-06-30 and zero duplicate daily grains in the primary window.
+- Remaining limitations: the notebook reports observed associations only; it does not establish causal effects.
+
 ## 2026-09-24T01:30:00+07:00 — Clarify notebook answer-cell workflow
 
 - Updated `CODING_INSTRUCTIONS.md` so notebook template prompts remain intact while
