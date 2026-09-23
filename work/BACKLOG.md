@@ -3,6 +3,17 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T04:45:00+07:00 - Create future work roadmap
+
+- Replaced the completed ML-06 checklist with a forward-looking roadmap for ML-07,
+  ML-08, ML-09, ML-10, and capstone writing through ML-11/ML-12.
+- Added explicit gates for committed notebook outputs, reproducible receipts, leakage
+  checks, public safety, validation, and final deployment handoff.
+- Files changed: `work/TODO.md`, `work/BACKLOG.md`.
+- Verification: reviewed the roadmap for alignment with the existing notebook skeletons
+  and ran `git diff --check`.
+- Remaining limitations: all roadmap items are future work and remain unchecked.
+
 ## 2026-09-24T04:40:00+07:00 - Persist ML-06 outputs and align eligibility floor
 
 - Corrected ML-06 so tests 1 and 2 first apply the ML-04-style feature eligibility floor
