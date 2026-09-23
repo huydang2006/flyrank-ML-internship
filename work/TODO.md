@@ -15,6 +15,8 @@
 - [x] Verify source dates, the daily fact grain, and the April-1 feature/label windows.
 - [x] Describe distributions before comparing signals; handle traffic-heavy tails with
       log transforms or grouped summaries.
+- [x] Apply the ML-04-style feature eligibility floor of at least 100 impressions before
+      signal tests; document why the separate future-label floor is not applicable.
 - [x] Run one mini-test per signal with visible sample sizes and denominator guards.
 - [x] Apply the signal-audit sample-size floor: do not issue a verdict for buckets with
       fewer than 50 rows, or cross-cuts with fewer than 30 rows.

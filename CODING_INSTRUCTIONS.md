@@ -59,7 +59,11 @@ Use this file when starting a new coding or notebook session in this repository.
    user to inspect.
 8. Never commit notebook work until every affected notebook has been run
    successfully from top to bottom with no exception. Read the outputs, not
-   only the exit status.
+   only the exit status. Save the successful executed notebook, including its
+   inspectable outputs, in the committed `.ipynb`; a separate local execution
+   artifact does not satisfy this requirement. Before declaring a notebook done,
+   confirm that its code cells contain outputs and that those outputs contain no
+   credentials, raw queries, client names, URLs, or other private data.
 
 ## Required final response
 

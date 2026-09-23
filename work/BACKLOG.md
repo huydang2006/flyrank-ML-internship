@@ -3,6 +3,24 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T04:40:00+07:00 - Persist ML-06 outputs and align eligibility floor
+
+- Corrected ML-06 so tests 1 and 2 first apply the ML-04-style feature eligibility floor
+  of `impressions >= 100`; the separate future-label floor is not applicable because
+  ML-06 has no future label.
+- Saved the successful top-to-bottom execution outputs directly into
+  `work/notebooks/w04_signal_audit.ipynb`.
+- Audited completed notebooks for missing outputs: ML-02, ML-03, ML-04, and ML-05
+  already contained outputs; no other notebook was marked complete.
+- Updated `CODING_INSTRUCTIONS.md` to require committed executed notebook outputs and
+  public-safe output inspection.
+- Files changed: `CODING_INSTRUCTIONS.md`, `work/notebooks/w04_signal_audit.ipynb`,
+  `work/TODO.md`, `work/BACKLOG.md`.
+- Verification: ML-06 executed top to bottom successfully; source count/date and
+  duplicate-grain checks passed; JSON/code validation and `git diff --check` passed.
+- Results after the floor: position tier vs pooled CTR `CONFIRMED`; impression volume
+  vs CTR stability `CONFIRMED`; measurable opportunity flag `MIXED`.
+
 ## 2026-09-24T01:35:00+07:00 — Reset TODO for ML-06 signal audit
 
 - Removed the completed ML-04/ML-05 planning checklist and replaced it with the scoped
