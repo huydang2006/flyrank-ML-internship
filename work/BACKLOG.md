@@ -3,6 +3,14 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T01:35:00+07:00 — Reset TODO for ML-06 signal audit
+
+- Removed the completed ML-04/ML-05 planning checklist and replaced it with the scoped
+  ML-06 signal-audit plan.
+- Files changed: `work/TODO.md`, `work/BACKLOG.md`.
+- Verification: reviewed the rewritten checklist and ran `git diff --check`.
+- Remaining limitations: ML-06 notebook implementation and execution are still pending.
+
 ## 2026-09-24T01:30:00+07:00 — Clarify notebook answer-cell workflow
 
 - Updated `CODING_INSTRUCTIONS.md` so notebook template prompts remain intact while
