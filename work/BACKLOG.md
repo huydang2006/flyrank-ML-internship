@@ -3,6 +3,33 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T17:29:10+07:00 - Revise ML-07 score and queue taxonomy
+
+- Replaced the baseline score with `relative CTR shortfall × feature-window
+  impressions`; removed `log1p` and the hand-set tier multiplier.
+- Added notebook markdown tables defining primary reason codes, supporting reason
+  codes, action mapping, and confidence notes.
+- Changed the actionable thresholds to `underperformance` at 50% below the tier
+  benchmark and `severe_underperformance` at 70% below. Added supporting signals
+  for high impressions, enough volume, low CTR, strong position, sessions,
+  guarded weak engagement, and unavailable engagement measurement.
+- Added guarded engagement context using only warehouse fields available in the
+  release: GA4 availability, sessions, and engaged sessions; unavailable
+  pageview/scroll fields were not assumed.
+- Added Precision@50 and Precision@100 while retaining Precision@10/@20 and the
+  eligible base rate. The public-safe queue now exports primary/supporting
+  reasons, suggested action, confidence note, and engagement rate.
+- Files changed: `work/notebooks/w04_baseline_score.ipynb`, `work/BACKLOG.md`.
+- Verification: successful top-to-bottom warehouse execution saved in the
+  notebook; 349,411 queue rows; zero duplicate ID pairs; no forbidden exported
+  fields; Precision@10 0.900000, Precision@20 0.800000, Precision@50 0.880000,
+  Precision@100 0.900000; leakage checks passed; notebook code/JSON validation
+  and `git diff --check` passed.
+- Remaining limitations: precision is measured against the existing April
+  future label and is not causal evidence; scroll-rate evidence is unavailable
+  in this warehouse schema. Unrelated formatting-only changes in future
+  notebooks were detected and left unstaged.
+
 ## 2026-09-24T15:29:09+07:00 - Complete ML-07 warehouse baseline queue
 
 - Completed the warehouse-backed ML-07 baseline notebook using the established
