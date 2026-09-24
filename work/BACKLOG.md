@@ -3,6 +3,31 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T19:45:00+07:00 - Correct pooled CTR and simplify ML-07 baseline
+
+- Repaired the earlier benchmark inconsistency: ML-03 now computes position-tier
+  benchmarks as pooled CTR (`SUM(clicks) / SUM(impressions) * 100`) while retaining
+  median CTR only as a comparison statistic.
+- Standardized warehouse tier CASE logic in ML-04, ML-05, ML-06, and ML-07 so impressions
+  below the feature floor, null position, and zero position are assigned an explicit
+  no-position/no-volume category rather than `deep`.
+- Replaced ML-07's tier-relative shortfall score with the approved hand-calculable
+  rule: eligible pages have feature CTR below `0.2%`; eligible pages rank by
+  feature-window impressions. Pooled tier CTR remains descriptive context only.
+- Files changed: `work/notebooks/w02_ml_task_framing.ipynb`,
+  `work/notebooks/w03_data_contract.ipynb`,
+  `work/notebooks/w03_feature_leakage_check.ipynb`,
+  `work/notebooks/w04_signal_audit.ipynb`, `work/notebooks/w04_baseline_score.ipynb`,
+  `work/TODO.md`.
+- Verification: executed all five affected notebooks top to bottom from the repository
+  root; warehouse source and date guards passed; ML-06 pooled tier audit remained
+  `CONFIRMED`; ML-07 queue has 349,411 rows, 0 duplicate ID pairs, 0 threshold
+  violations, contiguous ranks, and leakage/public-safety checks passed. Final
+  ML-07 precision: @10 `0.800000`, @20 `0.750000`, @50 `0.820000`, @100 `0.820000`.
+- Remaining limitations: the `0.2%` threshold is a transparent policy choice, not a
+  causal or optimized cutoff; pooled tier CTR is retained for context and future
+  analysis, not used by the simple ML-07 flag.
+
 ## 2026-09-24T17:29:10+07:00 - Revise ML-07 score and queue taxonomy
 
 - Replaced the baseline score with `relative CTR shortfall × feature-window
