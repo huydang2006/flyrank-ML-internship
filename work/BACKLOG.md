@@ -3,6 +3,26 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-25T01:00:11+07:00 - Raise ML-07 CTR threshold to 0.5%
+
+- Updated the transparent ML-07 rule from feature CTR below `0.2%` to below
+  `0.5%`; the 100-impression floor, valid-position requirement, impression-based
+  ranking, reason codes, denominator guards, and future-label isolation remain
+  unchanged.
+- Audited the prior implementation and found no related logic defect: the score
+  already reads the threshold from `LOW_CTR_THRESHOLD`, position fallbacks keep
+  missing/zero position out of `deep`, and precision@K evaluates the same
+  eligible future-label slice.
+- Files changed: `work/notebooks/w04_baseline_score.ipynb`, `work/TODO.md`,
+  `work/BACKLOG.md`.
+- Verification: top-to-bottom notebook execution succeeded from the repository
+  root; the queue has 349,411 rows and 104,992 actionable rows, with precision@10
+  `0.300000`, precision@20 `0.400000`, precision@50 `0.380000`, precision@100
+  `0.340000`, eligible base rate `0.585554`, and leakage/public-safety checks
+  passing. Evaluation uses the April future-label window only.
+- Remaining limitation: `0.5%` is a transparent policy choice, not an optimized
+  or causal cutoff.
+
 ## 2026-09-24T19:45:00+07:00 - Correct pooled CTR and simplify ML-07 baseline
 
 - Repaired the earlier benchmark inconsistency: ML-03 now computes position-tier

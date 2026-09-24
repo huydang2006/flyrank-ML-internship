@@ -10,7 +10,7 @@ entry before committing.
 
 - [x] Re-read the lane decision, ML-04 contract, ML-05 leakage audit, and ML-06 verdicts.
 - [x] Define a transparent fixed-threshold baseline rule in plain language:
-      feature CTR below 0.2%, at least 100 impressions, and a valid position tier.
+      feature CTR below 0.5%, at least 100 impressions, and a valid position tier.
 - [x] Use pooled CTR consistently for tier context and repair no-position fallbacks
       so missing/zero position is never classified as `deep`.
 - [x] Include explicit reason codes, volume floors, denominator guards, and confidence notes.
