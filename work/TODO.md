@@ -8,15 +8,15 @@ entry before committing.
 
 ## ML-07 — Rule baseline and ranked review queue
 
-- [ ] Re-read the lane decision, ML-04 contract, ML-05 leakage audit, and ML-06 verdicts.
-- [ ] Define a transparent tier-aware baseline score in plain language.
-- [ ] Include explicit reason codes, volume floors, denominator guards, and confidence notes.
-- [ ] Build the full ranked queue and export the required public-safe artifact to
+- [x] Re-read the lane decision, ML-04 contract, ML-05 leakage audit, and ML-06 verdicts.
+- [x] Define a transparent tier-aware baseline score in plain language.
+- [x] Include explicit reason codes, volume floors, denominator guards, and confidence notes.
+- [x] Build the full ranked queue and export the required public-safe artifact to
       `work/outputs/`.
-- [ ] Review the top 20 manually: action, reason code, confidence, and failure mode.
-- [ ] Check that IDs are grouping fields only and that no product flags or future windows
+- [x] Review the top 20 manually: action, reason code, confidence, and failure mode.
+- [x] Check that IDs are grouping fields only and that no product flags or future windows
       enter the score.
-- [ ] Run the notebook top to bottom, inspect outputs, save outputs in the notebook, and
+- [x] Run the notebook top to bottom, inspect outputs, save outputs in the notebook, and
       update `work/BACKLOG.md`.
 
 ## ML-08 — Model and baseline comparison

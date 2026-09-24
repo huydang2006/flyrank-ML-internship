@@ -3,6 +3,43 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-09-24T15:29:09+07:00 - Complete ML-07 warehouse baseline queue
+
+- Completed the warehouse-backed ML-07 baseline notebook using the established
+  2026-01-01 through 2026-03-31 feature window and 2026-04-01 through 2026-04-30
+  evaluation window.
+- Defined a tier-aware CTR underperformance score with a 100-impression feature
+  floor, denominator-safe pooled tier benchmarks, explicit reason codes, confidence
+  notes, top-20 failure-mode review, and leakage/public-safety assertions.
+- Exported the public-safe ranked artifact to `work/outputs/baseline_action_score.csv`.
+- Files changed: `work/notebooks/w04_baseline_score.ipynb`, `work/TODO.md`,
+  `work/BACKLOG.md`.
+- Verification: notebook JSON/code validation, successful top-to-bottom warehouse
+  execution saved in the committed notebook, 349,411-row queue validation, zero
+  duplicate ID pairs, contiguous ranks, forbidden-field check, `git diff --check`,
+  and no nested runner output remaining.
+- Results: 78,436 actionable rows; eligible base rate 0.585554; precision@10
+  1.000000; precision@20 1.000000; one weak pick was identified in the top 20.
+- [ERROR] 2026-09-24T15:29:09+07:00 — the first post-edit execution used a
+  non-f-string SQL template for `MIN_FEATURE_IMPRESSIONS` and failed in
+  `work/notebooks/w04_baseline_score.ipynb`; fixed before the successful run.
+  [ERROR] 2026-09-24T15:29:09+07:00 — the first successful runner used the notebook
+  directory as its working directory and wrote a temporary nested artifact; the
+  specific `work/notebooks/work/` path was removed and the notebook was rerun from
+  the repository root.
+- Remaining limitations: this is an observed, directional decision-support queue,
+  not evidence that refreshing a page will cause recovery; future validation remains
+  part of ML-08/ML-09.
+
+## 2026-09-24T14:10:27+07:00 - Clarify warehouse dataset policy
+
+- Updated the session instructions to make the dataset transition explicit:
+  starter CSV for early starter-work assignments, then the FlyRank warehouse
+  release from W03/ML-04 onward unless a task explicitly specifies otherwise.
+- Files changed: `CODING_INSTRUCTIONS.md`, `work/BACKLOG.md`.
+- Verification: reviewed the documentation diff and ran `git diff --check`.
+- Remaining limitations: none; ML-07 implementation is still pending.
+
 ## 2026-09-24T04:45:00+07:00 - Create future work roadmap
 
 - Replaced the completed ML-06 checklist with a forward-looking roadmap for ML-07,
@@ -78,3 +115,12 @@ do not rewrite history. Use local time with an explicit offset.
 - Files changed: `CODING_INSTRUCTIONS.md`, `work/TODO.md`, `work/BACKLOG.md`.
 - Verification: the previous backlog entry records successful top-to-bottom execution of both affected notebooks with `HF_TOKEN`; current changes were reviewed before staging.
 - Remaining limitation: existing notebook edits are intentionally kept for the separate notebook commit; future notebook work must follow the new markdown-preservation rule.
+
+## 2026-09-24T14:18:52+07:00 - Complete ML-07 baseline score
+
+- Implemented the warehouse-backed ML-04 feature contract in `w04_baseline_score.ipynb`, including a transparent tier-aware score, reason codes, feature and label denominator guards, confidence notes, future-label evaluation, and leakage checks.
+- Exported the public-safe ranked queue to `work/outputs/baseline_action_score.csv` (ignored by git); the queue contains 349,411 rows and 85,706 actionable reviews.
+- Added a top-20 review, explicit weak-pick inspection, precision@10/20, base rate, and run-safe assertions for dates, duplicate grain, identifiers, product flags, and future-window isolation.
+- Files changed: `work/notebooks/w04_baseline_score.ipynb`, `work/TODO.md`, `work/BACKLOG.md`; generated CSV remains gitignored.
+- Verification: notebook executed top to bottom with `HF_TOKEN`; source check reported 78,835,655 rows through 2026-06-30, zero duplicate feature grains, and leakage check `PASS`.
+- Remaining limitations: this is an observed decision-support ranking rule; April labels are used for evaluation only and do not establish causal impact.

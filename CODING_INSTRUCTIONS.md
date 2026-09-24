@@ -7,6 +7,9 @@ Use this file when starting a new coding or notebook session in this repository.
 1. Read `skills/README.md` first. Find the task in its table and load exactly one
    task skill. Also load `skills/flyrank/flyrank-data/SKILL.md` whenever the task
    touches FlyRank data or warehouse queries.
+   Use the starter CSV for the early starter-work assignments only; from W03/ML-04
+   onward, use the FlyRank warehouse release as the authoritative dataset unless
+   a task explicitly says otherwise.
 2. Read `work/TODO.md`, then read the relevant notebooks and docs in order.
 3. Read `work/BACKLOG.md` to understand previous changes, errors, and unfinished
    follow-ups.
