@@ -1,0 +1,68 @@
+{
+  "best_learned_model": "logistic_regression",
+  "comparison": [
+    {
+      "average_precision": 0.7646334898240575,
+      "brier": 0.20591541333984897,
+      "correct_at_50": 47.0,
+      "coverage_at_50": 0.01721763085399449,
+      "log_loss": 0.6030734898242527,
+      "model": "logistic_regression",
+      "precision_at_10": 0.9,
+      "precision_at_100": 0.92,
+      "precision_at_20": 0.95,
+      "precision_at_50": 0.94,
+      "roc_auc": 0.7843932560606091
+    },
+    {
+      "average_precision": 0.7699652368357957,
+      "brier": 0.18761339822475293,
+      "correct_at_50": 46.0,
+      "coverage_at_50": 0.01721763085399449,
+      "log_loss": 0.5529785841929216,
+      "model": "random_forest",
+      "precision_at_10": 1.0,
+      "precision_at_100": 0.91,
+      "precision_at_20": 1.0,
+      "precision_at_50": 0.92,
+      "roc_auc": 0.7892096780008008
+    },
+    {
+      "average_precision": 0.6246565719896482,
+      "brier": 0.3071625344352617,
+      "correct_at_50": 33.0,
+      "coverage_at_50": 0.01721763085399449,
+      "log_loss": 11.071259925307332,
+      "model": "ml07_rule_baseline",
+      "precision_at_10": 0.6,
+      "precision_at_100": 0.67,
+      "precision_at_20": 0.65,
+      "precision_at_50": 0.66,
+      "roc_auc": 0.6935486319160764
+    }
+  ],
+  "feature_columns": [
+    "impressions_90d",
+    "clicks_90d",
+    "sessions_90d",
+    "engaged_sessions_90d",
+    "avg_position_feature",
+    "engagement_rate_feature"
+  ],
+  "feature_window": [
+    "2026-01-01",
+    "2026-03-31"
+  ],
+  "held_out_clients": 9,
+  "label_window": [
+    "2026-04-01",
+    "2026-04-30"
+  ],
+  "queue_output": "work/outputs/ml08_model_queue.csv",
+  "random_state": 42,
+  "split_strategy": "GroupShuffleSplit by client_hash_id, test_size=0.2",
+  "target": "future CTR below half of feature position-tier pooled CTR",
+  "task": "ML-08",
+  "test_rows": 2904,
+  "train_rows": 87846
+}

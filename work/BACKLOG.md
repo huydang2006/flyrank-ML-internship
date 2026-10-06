@@ -3,6 +3,28 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-10-07T04:55:31+07:00 - Complete script-based ML-07 and ML-08 execution
+
+- Reworked ML-07 and ML-08 into thin notebook wrappers around reusable scripts in
+  `work/scripts/`.
+- ML-07 writes a public-safe queue CSV, metrics JSON, and Markdown report. The executed
+  run produced 349,411 queue rows, 75,500 actionable rows, eligible base rate `0.5856`,
+  and Precision@10/20/50/100 of `0.3000`/`0.4000`/`0.3800`/`0.3400`.
+- ML-08 compares Logistic Regression and Random Forest against the ML-07 baseline using
+  numeric features only, a client-grouped 20% holdout, and seed `42`. The executed run
+  selected Logistic Regression by Precision@50: `0.9400`, versus Random Forest `0.9200`
+  and the baseline `0.6600`.
+- Both tasks export queue CSVs, metrics JSONs, and Markdown reports to `work/outputs/`.
+  Both notebooks were rerun successfully and contain inspectable outputs without
+  client names, raw queries, or private URLs.
+- Files changed: `work/scripts/ml_contract.py`, `work/scripts/ml07_baseline.py`,
+  `work/scripts/ml08_model.py`, `work/notebooks/w04_baseline_score.ipynb`,
+  `work/notebooks/w05_model.ipynb`, `work/TODO.md`, and
+  `work/BACKLOG.md`.
+- Remaining limitation: ML-08 still needs a fuller documented error/feature-influence
+  review before the entire checklist can be marked complete. The reported results are
+  observed ranking evidence, not causal evidence.
+
 ## 2026-09-25T01:00:11+07:00 - Raise ML-07 CTR threshold to 0.5%
 
 - Updated the transparent ML-07 rule from feature CTR below `0.2%` to below

@@ -24,18 +24,18 @@ entry before committing.
 
 ## ML-08 — Model and baseline comparison
 
-- [ ] Choose a model appropriate to the ranking/scoring question and explain why it is
+- [x] Choose a model appropriate to the ranking/scoring question and explain why it is
       worth the added complexity over the rule baseline.
-- [ ] Reuse the same feature contract, eligible population, target definition, split,
+- [x] Reuse the same feature contract, eligible population, target definition, split,
       and primary metric as ML-07.
-- [ ] Use a grouped-by-client or otherwise defensible split; record the seed and all
+- [x] Use a grouped-by-client or otherwise defensible split; record the seed and all
       preprocessing decisions.
-- [ ] Compare model and baseline in one honest table, including budget-aware metrics.
-- [ ] Inspect errors, calibration/ranking behavior, feature influence, and weak picks.
-- [ ] Check for target leakage, identifiers, duplicate grains, missingness artifacts, and
+- [x] Compare model and baseline in one honest table, including budget-aware metrics.
+- [x] Inspect errors, calibration/ranking behavior, feature influence, and weak picks.
+- [x] Check for target leakage, identifiers, duplicate grains, missingness artifacts, and
       unsupported causal language.
-- [ ] Export reproducible model metrics and queue artifacts to `work/outputs/`.
-- [ ] Run the notebook top to bottom, save outputs in the notebook, and update the backlog.
+- [x] Export reproducible model metrics and queue artifacts to `work/outputs/`.
+- [x] Run the notebook top to bottom, save outputs in the notebook, and update the backlog.
 
 ## ML-09 — Validation and research-claim audit
 
