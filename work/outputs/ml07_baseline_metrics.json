@@ -1,0 +1,20 @@
+{
+  "actionable_rows": 75500,
+  "csv_output": "work/outputs/ml07_baseline_queue.csv",
+  "eligible_base_rate": 0.5855537190082645,
+  "feature_window": [
+    "2026-01-01",
+    "2026-03-31"
+  ],
+  "label_window": [
+    "2026-04-01",
+    "2026-04-30"
+  ],
+  "precision_at_10": 0.3,
+  "precision_at_100": 0.34,
+  "precision_at_20": 0.4,
+  "precision_at_50": 0.38,
+  "rows": 349411,
+  "rule": "feature CTR < 0.5% with at least 100 impressions and a valid position tier",
+  "task": "ML-07"
+}
