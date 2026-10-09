@@ -9,6 +9,7 @@ import duckdb
 import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score, roc_auc_score
+from sklearn.model_selection import GroupShuffleSplit
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,6 +19,7 @@ LABEL_START, LABEL_END = "2026-04-01", "2026-04-30"
 MIN_IMPRESSIONS = 100
 LOW_CTR_THRESHOLD = 0.5
 RANDOM_STATE = 42
+HOLDOUT_TEST_SIZE = 0.2
 
 FACT = (
     "read_parquet("
@@ -100,10 +102,10 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
             CASE
                 WHEN impressions_90d < {MIN_IMPRESSIONS}
                     OR positioned_impressions <= 0 THEN 'no_position_or_volume'
-                WHEN position_weighted_sum / impressions_90d <= 3 THEN 'top_3'
-                WHEN position_weighted_sum / impressions_90d <= 10 THEN 'page_1'
-                WHEN position_weighted_sum / impressions_90d <= 20 THEN 'striking'
-                WHEN position_weighted_sum / impressions_90d <= 50 THEN 'page_3_5'
+                WHEN position_weighted_sum / positioned_impressions <= 3 THEN 'top_3'
+                WHEN position_weighted_sum / positioned_impressions <= 10 THEN 'page_1'
+                WHEN position_weighted_sum / positioned_impressions <= 20 THEN 'striking'
+                WHEN position_weighted_sum / positioned_impressions <= 50 THEN 'page_3_5'
                 ELSE 'deep'
             END AS position_tier,
             SUM(clicks_90d) / NULLIF(SUM(impressions_90d), 0) * 100
@@ -125,10 +127,10 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
             CASE
                 WHEN b.impressions_90d < {MIN_IMPRESSIONS}
                     OR b.positioned_impressions <= 0 THEN 'no_position_or_volume'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 3 THEN 'top_3'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 10 THEN 'page_1'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 20 THEN 'striking'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 50 THEN 'page_3_5'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 3 THEN 'top_3'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 10 THEN 'page_1'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 20 THEN 'striking'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 50 THEN 'page_3_5'
                 ELSE 'deep'
             END AS position_tier,
             t.expected_ctr_feature
@@ -137,10 +139,10 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
           ON t.position_tier = CASE
                 WHEN b.impressions_90d < {MIN_IMPRESSIONS}
                     OR b.positioned_impressions <= 0 THEN 'no_position_or_volume'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 3 THEN 'top_3'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 10 THEN 'page_1'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 20 THEN 'striking'
-                WHEN b.position_weighted_sum / b.impressions_90d <= 50 THEN 'page_3_5'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 3 THEN 'top_3'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 10 THEN 'page_1'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 20 THEN 'striking'
+                WHEN b.position_weighted_sum / b.positioned_impressions <= 50 THEN 'page_3_5'
                 ELSE 'deep'
             END
         """
@@ -169,6 +171,14 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
     data["feature_eligible"] = data["impressions_90d"] >= MIN_IMPRESSIONS
     data["label_eligible"] = data["impressions_next30d"] >= MIN_IMPRESSIONS
     data["known_tier"] = data["position_tier"].ne("no_position_or_volume")
+    data["position_available"] = data["positioned_impressions"] > 0
+    data["engagement_available"] = (
+        data["ga4_available_90d"].eq(1) & data["sessions_90d"].gt(0)
+    )
+    data["low_volume"] = data["impressions_90d"] < MIN_IMPRESSIONS
+    data["log_impressions_90d"] = np.log1p(data["impressions_90d"])
+    data["log_clicks_90d"] = np.log1p(data["clicks_90d"])
+    data["log_sessions_90d"] = np.log1p(data["sessions_90d"])
     data["baseline_score"] = np.where(
         data["feature_eligible"]
         & data["known_tier"]
@@ -191,13 +201,35 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
     return data, eligible
 
 
+def grouped_holdout(
+    model_data: pd.DataFrame,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    splitter = GroupShuffleSplit(
+        n_splits=1,
+        test_size=HOLDOUT_TEST_SIZE,
+        random_state=RANDOM_STATE,
+    )
+    train_idx, test_idx = next(
+        splitter.split(
+            model_data,
+            model_data["target"],
+            groups=model_data["client_hash_id"],
+        )
+    )
+    train = model_data.iloc[train_idx].copy()
+    test = model_data.iloc[test_idx].copy()
+    assert set(train["client_hash_id"]).isdisjoint(set(test["client_hash_id"]))
+    assert train["target"].nunique() == 2 and test["target"].nunique() == 2
+    return train, test
+
+
 def precision_at_k(y_true: np.ndarray, scores: np.ndarray, k: int) -> float:
     order = np.argsort(-np.asarray(scores), kind="mergesort")[:k]
     return float(np.asarray(y_true)[order].mean()) if len(order) else 0.0
 
 
 def ranking_metrics(y_true: np.ndarray, scores: np.ndarray) -> dict[str, float]:
-    scores = np.clip(np.asarray(scores, dtype=float), 0, 1)
+    scores = np.asarray(scores, dtype=float)
     y_true = np.asarray(y_true, dtype=int)
     order = np.argsort(-scores, kind="mergesort")
     top_50 = order[: min(50, len(order))]
@@ -218,5 +250,46 @@ def ranking_metrics(y_true: np.ndarray, scores: np.ndarray) -> dict[str, float]:
     return metrics
 
 
+def client_balanced_ranking(
+    frame: pd.DataFrame,
+    scores: np.ndarray,
+    group_column: str = "client_hash_id",
+) -> dict[str, object]:
+    scored = frame[[group_column, "target"]].copy()
+    scored["score"] = np.asarray(scores, dtype=float)
+    per_client: dict[str, dict[str, float | int]] = {}
+    for client_id, group in scored.groupby(group_column, sort=True):
+        metrics = ranking_metrics(
+            group["target"].to_numpy(),
+            group["score"].to_numpy(),
+        )
+        per_client[str(client_id)] = {
+            "rows": int(len(group)),
+            "positive_rate": float(group["target"].mean()),
+            "precision_at_10": metrics["precision_at_10"],
+            "precision_at_20": metrics["precision_at_20"],
+            "precision_at_50": metrics["precision_at_50"],
+            "precision_at_100": metrics["precision_at_100"],
+        }
+    return {
+        "clients": per_client,
+        "macro_precision_at_10": float(
+            np.mean([row["precision_at_10"] for row in per_client.values()])
+        ),
+        "macro_precision_at_20": float(
+            np.mean([row["precision_at_20"] for row in per_client.values()])
+        ),
+        "macro_precision_at_50": float(
+            np.mean([row["precision_at_50"] for row in per_client.values()])
+        ),
+        "macro_precision_at_100": float(
+            np.mean([row["precision_at_100"] for row in per_client.values()])
+        ),
+    }
+
+
 def write_json(path: Path, payload: dict) -> None:
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True, allow_nan=False),
+        encoding="utf-8",
+    )
