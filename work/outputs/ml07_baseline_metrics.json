@@ -6,6 +6,92 @@
     "2026-01-01",
     "2026-03-31"
   ],
+  "holdout_client_balanced": {
+    "clients": {
+      "client_0fa64a184f18a4a0": {
+        "positive_rate": 0.3680351906158358,
+        "precision_at_10": 0.5,
+        "precision_at_100": 0.45,
+        "precision_at_20": 0.35,
+        "precision_at_50": 0.38,
+        "rows": 682
+      },
+      "client_2094c6eb080311d5": {
+        "positive_rate": 0.4831184775936157,
+        "precision_at_10": 0.5,
+        "precision_at_100": 0.61,
+        "precision_at_20": 0.5,
+        "precision_at_50": 0.58,
+        "rows": 1629
+      },
+      "client_3ffa76342f366962": {
+        "positive_rate": 0.203125,
+        "precision_at_10": 0.6,
+        "precision_at_100": 0.203125,
+        "precision_at_20": 0.3,
+        "precision_at_50": 0.24,
+        "rows": 64
+      },
+      "client_795153d5b7850ccf": {
+        "positive_rate": 1.0,
+        "precision_at_10": 1.0,
+        "precision_at_100": 1.0,
+        "precision_at_20": 1.0,
+        "precision_at_50": 1.0,
+        "rows": 28
+      },
+      "client_9d54435aabd95a6c": {
+        "positive_rate": 1.0,
+        "precision_at_10": 1.0,
+        "precision_at_100": 1.0,
+        "precision_at_20": 1.0,
+        "precision_at_50": 1.0,
+        "rows": 1
+      },
+      "client_a2eeb8899886adde": {
+        "positive_rate": 0.23076923076923078,
+        "precision_at_10": 0.3,
+        "precision_at_100": 0.23076923076923078,
+        "precision_at_20": 0.23076923076923078,
+        "precision_at_50": 0.23076923076923078,
+        "rows": 13
+      },
+      "client_b77d0d5f08f05e64": {
+        "positive_rate": 0.46153846153846156,
+        "precision_at_10": 0.5,
+        "precision_at_100": 0.46153846153846156,
+        "precision_at_20": 0.55,
+        "precision_at_50": 0.6,
+        "rows": 78
+      },
+      "client_c182d11e4862a37d": {
+        "positive_rate": 0.7955665024630542,
+        "precision_at_10": 0.9,
+        "precision_at_100": 0.78,
+        "precision_at_20": 0.8,
+        "precision_at_50": 0.8,
+        "rows": 406
+      },
+      "client_f6f0cdf26d03d7bd": {
+        "positive_rate": 0.0,
+        "precision_at_10": 0.0,
+        "precision_at_100": 0.0,
+        "precision_at_20": 0.0,
+        "precision_at_50": 0.0,
+        "rows": 3
+      }
+    },
+    "macro_precision_at_10": 0.588888888888889,
+    "macro_precision_at_100": 0.526159188034188,
+    "macro_precision_at_20": 0.5256410256410257,
+    "macro_precision_at_50": 0.5367521367521368
+  },
+  "holdout_clients": 9,
+  "holdout_precision_at_10": 0.7,
+  "holdout_precision_at_100": 0.62,
+  "holdout_precision_at_20": 0.75,
+  "holdout_precision_at_50": 0.72,
+  "holdout_rows": 2904,
   "label_window": [
     "2026-04-01",
     "2026-04-30"

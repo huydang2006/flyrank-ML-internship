@@ -15,6 +15,8 @@ from ml_contract import (
     MIN_IMPRESSIONS,
     OUTPUT_DIR,
     connect,
+    client_balanced_ranking,
+    grouped_holdout,
     load_contract,
     precision_at_k,
     write_json,
@@ -114,6 +116,7 @@ def main() -> None:
     connection = connect()
     data, eligible = load_contract(connection)
     queue = build_queue(data)
+    _, holdout = grouped_holdout(eligible)
     public_columns = [
         "rank",
         "client_hash_id",
@@ -145,6 +148,15 @@ def main() -> None:
         "precision_at_20": precision_at_k(eligible["target"].to_numpy(), eligible["baseline_score"].to_numpy(), 20),
         "precision_at_50": precision_at_k(eligible["target"].to_numpy(), eligible["baseline_score"].to_numpy(), 50),
         "precision_at_100": precision_at_k(eligible["target"].to_numpy(), eligible["baseline_score"].to_numpy(), 100),
+        "holdout_rows": int(len(holdout)),
+        "holdout_clients": int(holdout["client_hash_id"].nunique()),
+        "holdout_precision_at_10": precision_at_k(holdout["target"].to_numpy(), holdout["baseline_score"].to_numpy(), 10),
+        "holdout_precision_at_20": precision_at_k(holdout["target"].to_numpy(), holdout["baseline_score"].to_numpy(), 20),
+        "holdout_precision_at_50": precision_at_k(holdout["target"].to_numpy(), holdout["baseline_score"].to_numpy(), 50),
+        "holdout_precision_at_100": precision_at_k(holdout["target"].to_numpy(), holdout["baseline_score"].to_numpy(), 100),
+        "holdout_client_balanced": client_balanced_ranking(
+            holdout, holdout["baseline_score"].to_numpy()
+        ),
         "csv_output": "work/outputs/ml07_baseline_queue.csv",
     }
     write_json(output_dir / "ml07_baseline_metrics.json", metrics)
@@ -164,6 +176,12 @@ def main() -> None:
             f"| Precision@20 | {metrics['precision_at_20']:.4f} |",
             f"| Precision@50 | {metrics['precision_at_50']:.4f} |",
             f"| Precision@100 | {metrics['precision_at_100']:.4f} |",
+            "",
+            "Shared grouped-client holdout comparison metrics:",
+            "",
+            f"- Holdout rows: **{metrics['holdout_rows']:,}** across **{metrics['holdout_clients']}** clients",
+            f"- Holdout Precision@10/20/50/100: **{metrics['holdout_precision_at_10']:.4f}** / **{metrics['holdout_precision_at_20']:.4f}** / **{metrics['holdout_precision_at_50']:.4f}** / **{metrics['holdout_precision_at_100']:.4f}**",
+            f"- Client-balanced holdout Precision@10/20/50/100: **{metrics['holdout_client_balanced']['macro_precision_at_10']:.4f}** / **{metrics['holdout_client_balanced']['macro_precision_at_20']:.4f}** / **{metrics['holdout_client_balanced']['macro_precision_at_50']:.4f}** / **{metrics['holdout_client_balanced']['macro_precision_at_100']:.4f}**",
             "",
             "Future labels are used only for evaluation. The score uses feature-window fields only.",
         ]

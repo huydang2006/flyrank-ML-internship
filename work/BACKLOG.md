@@ -3,6 +3,34 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-10-10T02:17:04+07:00 - Add client-balanced ML-07 and ML-08 validation receipts
+
+- Added shared-holdout client-balanced Precision@10/20/50/100 and per-client support/base-rate
+  receipts to ML-07 and ML-08. Baseline full-population metrics remain unchanged:
+  Precision@10/20/50/100 `0.3000`/`0.4000`/`0.3800`/`0.3400`.
+- The refreshed notebooks were run top to bottom by the user after the code changes. The
+  shared holdout contains 2,904 rows across 9 clients. Row-weighted holdout Precision@50
+  is `0.7200` for the baseline, `0.8600` for Logistic Regression, and `0.9200` for
+  Random Forest.
+- Client-balanced macro Precision@50 is `0.5345` for the baseline, `0.6234` for Logistic
+  Regression, and `0.6412` for Random Forest. The macro result is the safer comparison
+  because the row-weighted result is influenced by unequal client sizes.
+- The holdout still contains very small client groups, including one client with 1 row and
+  another with 3 rows; per-client metrics for those groups are unstable. The 9-client,
+  single-period grouped holdout is not sufficient evidence of future-period generalization.
+- Files changed: `work/scripts/ml_contract.py`, `work/scripts/ml07_baseline.py`,
+  `work/scripts/ml08_model.py`, `work/notebooks/w04_baseline_score.ipynb`,
+  `work/notebooks/w05_model.ipynb`, `work/outputs/ml07_baseline_metrics.json`,
+  `work/outputs/ml07_baseline_report.md`, `work/outputs/ml08_model_metrics.json`,
+  `work/outputs/ml08_model_report.md`, and `work/BACKLOG.md`.
+- Verification: user-run top-to-bottom execution of both notebooks; refreshed outputs contain
+  the client-balanced receipts and baseline calibration fields serialize as `null`. Changed
+  Python scripts compiled successfully and `git diff --check` passed. No notebook was run by
+  the assistant.
+- Remaining limitation: ML-09 should use repeated grouped and time-aware validation, minimum
+  per-client support rules, and uncertainty intervals before presenting a headline model
+  improvement.
+
 ## 2026-10-07T04:55:31+07:00 - Complete script-based ML-07 and ML-08 execution
 
 - Reworked ML-07 and ML-08 into thin notebook wrappers around reusable scripts in

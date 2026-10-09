@@ -1,44 +1,286 @@
 {
-  "best_learned_model": "logistic_regression",
+  "best_learned_model": "random_forest",
+  "client_balanced_comparison": {
+    "logistic_regression": {
+      "clients": {
+        "client_0fa64a184f18a4a0": {
+          "positive_rate": 0.3680351906158358,
+          "precision_at_10": 0.7,
+          "precision_at_100": 0.76,
+          "precision_at_20": 0.75,
+          "precision_at_50": 0.76,
+          "rows": 682
+        },
+        "client_2094c6eb080311d5": {
+          "positive_rate": 0.4831184775936157,
+          "precision_at_10": 0.8,
+          "precision_at_100": 0.8,
+          "precision_at_20": 0.85,
+          "precision_at_50": 0.86,
+          "rows": 1629
+        },
+        "client_3ffa76342f366962": {
+          "positive_rate": 0.203125,
+          "precision_at_10": 0.8,
+          "precision_at_100": 0.203125,
+          "precision_at_20": 0.55,
+          "precision_at_50": 0.26,
+          "rows": 64
+        },
+        "client_795153d5b7850ccf": {
+          "positive_rate": 1.0,
+          "precision_at_10": 1.0,
+          "precision_at_100": 1.0,
+          "precision_at_20": 1.0,
+          "precision_at_50": 1.0,
+          "rows": 28
+        },
+        "client_9d54435aabd95a6c": {
+          "positive_rate": 1.0,
+          "precision_at_10": 1.0,
+          "precision_at_100": 1.0,
+          "precision_at_20": 1.0,
+          "precision_at_50": 1.0,
+          "rows": 1
+        },
+        "client_a2eeb8899886adde": {
+          "positive_rate": 0.23076923076923078,
+          "precision_at_10": 0.3,
+          "precision_at_100": 0.23076923076923078,
+          "precision_at_20": 0.23076923076923078,
+          "precision_at_50": 0.23076923076923078,
+          "rows": 13
+        },
+        "client_b77d0d5f08f05e64": {
+          "positive_rate": 0.46153846153846156,
+          "precision_at_10": 0.6,
+          "precision_at_100": 0.46153846153846156,
+          "precision_at_20": 0.7,
+          "precision_at_50": 0.62,
+          "rows": 78
+        },
+        "client_c182d11e4862a37d": {
+          "positive_rate": 0.7955665024630542,
+          "precision_at_10": 1.0,
+          "precision_at_100": 0.9,
+          "precision_at_20": 0.95,
+          "precision_at_50": 0.88,
+          "rows": 406
+        },
+        "client_f6f0cdf26d03d7bd": {
+          "positive_rate": 0.0,
+          "precision_at_10": 0.0,
+          "precision_at_100": 0.0,
+          "precision_at_20": 0.0,
+          "precision_at_50": 0.0,
+          "rows": 3
+        }
+      },
+      "macro_precision_at_10": 0.6888888888888889,
+      "macro_precision_at_100": 0.5950480769230769,
+      "macro_precision_at_20": 0.67008547008547,
+      "macro_precision_at_50": 0.6234188034188034
+    },
+    "ml07_rule_baseline": {
+      "clients": {
+        "client_0fa64a184f18a4a0": {
+          "positive_rate": 0.3680351906158358,
+          "precision_at_10": 0.5,
+          "precision_at_100": 0.44,
+          "precision_at_20": 0.35,
+          "precision_at_50": 0.38,
+          "rows": 682
+        },
+        "client_2094c6eb080311d5": {
+          "positive_rate": 0.4831184775936157,
+          "precision_at_10": 0.5,
+          "precision_at_100": 0.61,
+          "precision_at_20": 0.5,
+          "precision_at_50": 0.58,
+          "rows": 1629
+        },
+        "client_3ffa76342f366962": {
+          "positive_rate": 0.203125,
+          "precision_at_10": 0.6,
+          "precision_at_100": 0.203125,
+          "precision_at_20": 0.35,
+          "precision_at_50": 0.22,
+          "rows": 64
+        },
+        "client_795153d5b7850ccf": {
+          "positive_rate": 1.0,
+          "precision_at_10": 1.0,
+          "precision_at_100": 1.0,
+          "precision_at_20": 1.0,
+          "precision_at_50": 1.0,
+          "rows": 28
+        },
+        "client_9d54435aabd95a6c": {
+          "positive_rate": 1.0,
+          "precision_at_10": 1.0,
+          "precision_at_100": 1.0,
+          "precision_at_20": 1.0,
+          "precision_at_50": 1.0,
+          "rows": 1
+        },
+        "client_a2eeb8899886adde": {
+          "positive_rate": 0.23076923076923078,
+          "precision_at_10": 0.3,
+          "precision_at_100": 0.23076923076923078,
+          "precision_at_20": 0.23076923076923078,
+          "precision_at_50": 0.23076923076923078,
+          "rows": 13
+        },
+        "client_b77d0d5f08f05e64": {
+          "positive_rate": 0.46153846153846156,
+          "precision_at_10": 0.5,
+          "precision_at_100": 0.46153846153846156,
+          "precision_at_20": 0.55,
+          "precision_at_50": 0.6,
+          "rows": 78
+        },
+        "client_c182d11e4862a37d": {
+          "positive_rate": 0.7955665024630542,
+          "precision_at_10": 0.9,
+          "precision_at_100": 0.78,
+          "precision_at_20": 0.8,
+          "precision_at_50": 0.8,
+          "rows": 406
+        },
+        "client_f6f0cdf26d03d7bd": {
+          "positive_rate": 0.0,
+          "precision_at_10": 0.0,
+          "precision_at_100": 0.0,
+          "precision_at_20": 0.0,
+          "precision_at_50": 0.0,
+          "rows": 3
+        }
+      },
+      "macro_precision_at_10": 0.588888888888889,
+      "macro_precision_at_100": 0.5250480769230769,
+      "macro_precision_at_20": 0.5311965811965812,
+      "macro_precision_at_50": 0.5345299145299145
+    },
+    "random_forest": {
+      "clients": {
+        "client_0fa64a184f18a4a0": {
+          "positive_rate": 0.3680351906158358,
+          "precision_at_10": 0.7,
+          "precision_at_100": 0.76,
+          "precision_at_20": 0.75,
+          "precision_at_50": 0.8,
+          "rows": 682
+        },
+        "client_2094c6eb080311d5": {
+          "positive_rate": 0.4831184775936157,
+          "precision_at_10": 1.0,
+          "precision_at_100": 0.88,
+          "precision_at_20": 0.95,
+          "precision_at_50": 0.94,
+          "rows": 1629
+        },
+        "client_3ffa76342f366962": {
+          "positive_rate": 0.203125,
+          "precision_at_10": 0.8,
+          "precision_at_100": 0.203125,
+          "precision_at_20": 0.6,
+          "precision_at_50": 0.26,
+          "rows": 64
+        },
+        "client_795153d5b7850ccf": {
+          "positive_rate": 1.0,
+          "precision_at_10": 1.0,
+          "precision_at_100": 1.0,
+          "precision_at_20": 1.0,
+          "precision_at_50": 1.0,
+          "rows": 28
+        },
+        "client_9d54435aabd95a6c": {
+          "positive_rate": 1.0,
+          "precision_at_10": 1.0,
+          "precision_at_100": 1.0,
+          "precision_at_20": 1.0,
+          "precision_at_50": 1.0,
+          "rows": 1
+        },
+        "client_a2eeb8899886adde": {
+          "positive_rate": 0.23076923076923078,
+          "precision_at_10": 0.3,
+          "precision_at_100": 0.23076923076923078,
+          "precision_at_20": 0.23076923076923078,
+          "precision_at_50": 0.23076923076923078,
+          "rows": 13
+        },
+        "client_b77d0d5f08f05e64": {
+          "positive_rate": 0.46153846153846156,
+          "precision_at_10": 0.5,
+          "precision_at_100": 0.46153846153846156,
+          "precision_at_20": 0.65,
+          "precision_at_50": 0.62,
+          "rows": 78
+        },
+        "client_c182d11e4862a37d": {
+          "positive_rate": 0.7955665024630542,
+          "precision_at_10": 1.0,
+          "precision_at_100": 0.89,
+          "precision_at_20": 0.9,
+          "precision_at_50": 0.92,
+          "rows": 406
+        },
+        "client_f6f0cdf26d03d7bd": {
+          "positive_rate": 0.0,
+          "precision_at_10": 0.0,
+          "precision_at_100": 0.0,
+          "precision_at_20": 0.0,
+          "precision_at_50": 0.0,
+          "rows": 3
+        }
+      },
+      "macro_precision_at_10": 0.7,
+      "macro_precision_at_100": 0.6028258547008547,
+      "macro_precision_at_20": 0.6756410256410256,
+      "macro_precision_at_50": 0.6411965811965812
+    }
+  },
   "comparison": [
     {
-      "average_precision": 0.7646334898240575,
-      "brier": 0.20591541333984897,
-      "correct_at_50": 47.0,
-      "coverage_at_50": 0.01721763085399449,
-      "log_loss": 0.6030734898242527,
-      "model": "logistic_regression",
-      "precision_at_10": 0.9,
-      "precision_at_100": 0.92,
-      "precision_at_20": 0.95,
-      "precision_at_50": 0.94,
-      "roc_auc": 0.7843932560606091
-    },
-    {
-      "average_precision": 0.7699652368357957,
-      "brier": 0.18761339822475293,
+      "average_precision": 0.7670911864258122,
+      "brier": 0.18913064113215577,
       "correct_at_50": 46.0,
       "coverage_at_50": 0.01721763085399449,
-      "log_loss": 0.5529785841929216,
+      "log_loss": 0.5566496379106074,
       "model": "random_forest",
       "precision_at_10": 1.0,
-      "precision_at_100": 0.91,
+      "precision_at_100": 0.9,
       "precision_at_20": 1.0,
       "precision_at_50": 0.92,
-      "roc_auc": 0.7892096780008008
+      "roc_auc": 0.7874465658921053
     },
     {
-      "average_precision": 0.6246565719896482,
-      "brier": 0.3071625344352617,
-      "correct_at_50": 33.0,
+      "average_precision": 0.7580229888475716,
+      "brier": 0.1900478734913296,
+      "correct_at_50": 43.0,
       "coverage_at_50": 0.01721763085399449,
-      "log_loss": 11.071259925307332,
+      "log_loss": 0.5601776462899133,
+      "model": "logistic_regression",
+      "precision_at_10": 1.0,
+      "precision_at_100": 0.86,
+      "precision_at_20": 1.0,
+      "precision_at_50": 0.86,
+      "roc_auc": 0.7858945339255594
+    },
+    {
+      "average_precision": 0.6114553029788394,
+      "brier": null,
+      "correct_at_50": 36.0,
+      "coverage_at_50": 0.01721763085399449,
+      "log_loss": null,
       "model": "ml07_rule_baseline",
-      "precision_at_10": 0.6,
-      "precision_at_100": 0.67,
-      "precision_at_20": 0.65,
-      "precision_at_50": 0.66,
-      "roc_auc": 0.6935486319160764
+      "precision_at_10": 0.7,
+      "precision_at_100": 0.62,
+      "precision_at_20": 0.75,
+      "precision_at_50": 0.72,
+      "roc_auc": 0.6835273057066583
     }
   ],
   "feature_columns": [
@@ -47,7 +289,12 @@
     "sessions_90d",
     "engaged_sessions_90d",
     "avg_position_feature",
-    "engagement_rate_feature"
+    "engagement_rate_feature",
+    "log_impressions_90d",
+    "log_clicks_90d",
+    "log_sessions_90d",
+    "ga4_available_90d",
+    "engagement_available"
   ],
   "feature_window": [
     "2026-01-01",
@@ -60,6 +307,7 @@
   ],
   "queue_output": "work/outputs/ml08_model_queue.csv",
   "random_state": 42,
+  "review_budget": 50,
   "split_strategy": "GroupShuffleSplit by client_hash_id, test_size=0.2",
   "target": "future CTR below half of feature position-tier pooled CTR",
   "task": "ML-08",

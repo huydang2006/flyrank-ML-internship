@@ -10,18 +10,20 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss, log_loss
-from sklearn.model_selection import GroupShuffleSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from ml_contract import (
     FEATURE_END,
     FEATURE_START,
+    HOLDOUT_TEST_SIZE,
     LABEL_END,
     LABEL_START,
     OUTPUT_DIR,
     RANDOM_STATE,
     connect,
+    client_balanced_ranking,
+    grouped_holdout,
     load_contract,
     ranking_metrics,
     write_json,
@@ -35,7 +37,13 @@ NUMERIC_FEATURES = [
     "engaged_sessions_90d",
     "avg_position_feature",
     "engagement_rate_feature",
+    "log_impressions_90d",
+    "log_clicks_90d",
+    "log_sessions_90d",
+    "ga4_available_90d",
+    "engagement_available",
 ]
+REVIEW_BUDGET = 50
 
 
 def build_models() -> dict[str, object]:
@@ -83,24 +91,14 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     connection = connect()
     _, model_data = load_contract(connection)
-    splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=RANDOM_STATE)
-    train_idx, test_idx = next(
-        splitter.split(
-            model_data,
-            model_data["target"],
-            groups=model_data["client_hash_id"],
-        )
-    )
-    train = model_data.iloc[train_idx].copy()
-    test = model_data.iloc[test_idx].copy()
-    assert set(train["client_hash_id"]).isdisjoint(set(test["client_hash_id"]))
-    assert train["target"].nunique() == 2 and test["target"].nunique() == 2
+    train, test = grouped_holdout(model_data)
 
     features = NUMERIC_FEATURES
     X_train, X_test = train[features], test[features]
     y_train, y_test = train["target"].astype(int), test["target"].astype(int)
-    results: list[dict[str, float | str]] = []
+    results: list[dict[str, float | str | None]] = []
     fitted: dict[str, Pipeline] = {}
+    client_balanced: dict[str, dict[str, object]] = {}
     for name, estimator in build_models().items():
         pipeline = Pipeline(
             [("preprocess", build_preprocessor()), ("model", estimator)]
@@ -117,17 +115,21 @@ def main() -> None:
         )
         results.append(metrics)
         fitted[name] = pipeline
+        client_balanced[name] = client_balanced_ranking(test, scores)
 
-    baseline_scores = (test["baseline_score"] > 0).astype(float).to_numpy()
+    baseline_scores = test["baseline_score"].to_numpy(dtype=float)
     baseline_metrics = ranking_metrics(y_test.to_numpy(), baseline_scores)
     baseline_metrics.update(
         {
             "model": "ml07_rule_baseline",
-            "brier": float(brier_score_loss(y_test, baseline_scores)),
-            "log_loss": float(log_loss(y_test, np.column_stack([1 - baseline_scores, baseline_scores]), labels=[0, 1])),
+            "brier": None,
+            "log_loss": None,
         }
     )
     results.append(baseline_metrics)
+    client_balanced["ml07_rule_baseline"] = client_balanced_ranking(
+        test, baseline_scores
+    )
     comparison = pd.DataFrame(results).sort_values(
         ["precision_at_50", "precision_at_20", "average_precision"]
         if "average_precision" in results[0]
@@ -150,11 +152,17 @@ def main() -> None:
         ]
     ].copy()
     review["model_score"] = best_scores
-    review["baseline_flag"] = test["baseline_score"].gt(0).to_numpy()
+    review["baseline_score"] = test["baseline_score"].to_numpy()
+    review["baseline_rank"] = (
+        test["baseline_score"].rank(method="first", ascending=False).astype(int).to_numpy()
+    )
+    review["model_rank"] = (
+        review["model_score"].rank(method="first", ascending=False).astype(int)
+    )
     review["error_type"] = np.select(
         [
-            (review["model_score"] >= 0.5) & review["target"].eq(0),
-            (review["model_score"] < 0.5) & review["target"].eq(1),
+            (review["model_rank"] <= REVIEW_BUDGET) & review["target"].eq(0),
+            (review["model_rank"] > REVIEW_BUDGET) & review["target"].eq(1),
         ],
         ["false_positive", "false_negative"],
         default="correct",
@@ -164,7 +172,7 @@ def main() -> None:
     ).reset_index(drop=True)
     queue.insert(0, "rank", np.arange(1, len(queue) + 1))
     queue["suggested_action"] = np.where(
-        queue["model_score"] >= 0.5, "review_for_refresh", "monitor_or_defer"
+        queue["model_rank"] <= REVIEW_BUDGET, "review_for_refresh", "monitor_or_defer"
     )
     queue[
         [
@@ -172,8 +180,9 @@ def main() -> None:
             "content_hash_id",
             "client_hash_id",
             "model_score",
-            "target",
-            "baseline_flag",
+            "model_rank",
+            "baseline_score",
+            "baseline_rank",
             "suggested_action",
             "impressions_90d",
             "ctr_feature",
@@ -187,13 +196,17 @@ def main() -> None:
         "feature_window": [FEATURE_START, FEATURE_END],
         "label_window": [LABEL_START, LABEL_END],
         "target": "future CTR below half of feature position-tier pooled CTR",
-        "split_strategy": "GroupShuffleSplit by client_hash_id, test_size=0.2",
+        "split_strategy": f"GroupShuffleSplit by client_hash_id, test_size={HOLDOUT_TEST_SIZE}",
         "train_rows": int(len(train)),
         "test_rows": int(len(test)),
         "held_out_clients": int(test["client_hash_id"].nunique()),
         "feature_columns": features,
-        "comparison": comparison.to_dict(orient="records"),
+        "comparison": comparison.astype(object)
+        .where(pd.notna(comparison), None)
+        .to_dict(orient="records"),
+        "client_balanced_comparison": client_balanced,
         "best_learned_model": best_model_name,
+        "review_budget": REVIEW_BUDGET,
         "queue_output": "work/outputs/ml08_model_queue.csv",
     }
     write_json(output_dir / "ml08_model_metrics.json", metrics_payload)
@@ -205,18 +218,24 @@ def main() -> None:
         f"- Split: grouped by client, seed `{RANDOM_STATE}`, test size `20%`",
         f"- Best learned model by Precision@50: **{best_model_name}**",
         "",
-        "| Model | Precision@10 | Precision@50 | Correct@50 | Brier | Log loss |",
-        "|---|---:|---:|---:|---:|---:|",
+        "| Model | P@10 | P@20 | P@50 | Macro P@50 | Correct@50 | Brier | Log loss |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in comparison.itertuples(index=False):
+        brier = "n/a" if pd.isna(row.brier) else f"{row.brier:.4f}"
+        log_loss_value = "n/a" if pd.isna(row.log_loss) else f"{row.log_loss:.4f}"
         report_lines.append(
             f"| {row.model} | {row.precision_at_10:.4f} | "
-            f"{row.precision_at_50:.4f} | {row.correct_at_50:.1f} | "
-            f"{row.brier:.4f} | {row.log_loss:.4f} |"
+            f"{row.precision_at_20:.4f} | {row.precision_at_50:.4f} | "
+            f"{client_balanced[row.model]['macro_precision_at_50']:.4f} | "
+            f"{row.correct_at_50:.1f} | {brier} | {log_loss_value} |"
         )
     report_lines.extend(
         [
             "",
+            f"Model actions use a fixed review budget of the top {REVIEW_BUDGET} held-out rows; a 0.5 probability threshold is not used for queue selection.",
+            "Calibration metrics are reported only for probabilistic learned models; the rule baseline is evaluated as a ranking score.",
+            "Macro Precision@K gives each held-out client equal weight. Per-client rows and base rates are stored in the metrics JSON.",
             "The queue is a review aid. Future-window fields are used for evaluation only.",
         ]
     )
