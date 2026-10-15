@@ -11,7 +11,7 @@
       "client_0fa64a184f18a4a0": {
         "positive_rate": 0.3680351906158358,
         "precision_at_10": 0.5,
-        "precision_at_100": 0.45,
+        "precision_at_100": 0.44,
         "precision_at_20": 0.35,
         "precision_at_50": 0.38,
         "rows": 682
@@ -26,10 +26,10 @@
       },
       "client_3ffa76342f366962": {
         "positive_rate": 0.203125,
-        "precision_at_10": 0.6,
+        "precision_at_10": 0.5,
         "precision_at_100": 0.203125,
-        "precision_at_20": 0.3,
-        "precision_at_50": 0.24,
+        "precision_at_20": 0.35,
+        "precision_at_50": 0.26,
         "rows": 64
       },
       "client_795153d5b7850ccf": {
@@ -81,10 +81,10 @@
         "rows": 3
       }
     },
-    "macro_precision_at_10": 0.588888888888889,
-    "macro_precision_at_100": 0.526159188034188,
-    "macro_precision_at_20": 0.5256410256410257,
-    "macro_precision_at_50": 0.5367521367521368
+    "macro_precision_at_10": 0.5777777777777778,
+    "macro_precision_at_100": 0.5250480769230769,
+    "macro_precision_at_20": 0.5311965811965812,
+    "macro_precision_at_50": 0.538974358974359
   },
   "holdout_clients": 9,
   "holdout_precision_at_10": 0.7,
@@ -96,11 +96,165 @@
     "2026-04-01",
     "2026-04-30"
   ],
+  "leakage_checks": {
+    "duplicate_queue_grain": true,
+    "feature_window_before_label_window": true,
+    "future_fields_excluded_from_public_queue": true,
+    "identifiers_not_score_inputs": true,
+    "product_flags_not_score_inputs": true,
+    "score_uses_only_feature_columns": true
+  },
   "precision_at_10": 0.3,
   "precision_at_100": 0.34,
   "precision_at_20": 0.4,
   "precision_at_50": 0.38,
   "rows": 349411,
   "rule": "feature CTR < 0.5% with at least 100 impressions and a valid position tier",
-  "task": "ML-07"
+  "task": "ML-07",
+  "weak_pick_summary": {
+    "top_20": [
+      {
+        "content_hash_id": "content_e241d6415ac9e534",
+        "rank": 1,
+        "score": 509684.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_ec2e0346994fb5a5",
+        "rank": 2,
+        "score": 509532.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_e8a52cf3d5988c07",
+        "rank": 3,
+        "score": 508139.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_b99ea6861864dea5",
+        "rank": 4,
+        "score": 463218.0,
+        "weak_pick": true,
+        "weak_pick_reasons": "engagement_not_measured"
+      },
+      {
+        "content_hash_id": "content_acbcc847f8996314",
+        "rank": 5,
+        "score": 433095.0,
+        "weak_pick": true,
+        "weak_pick_reasons": "engagement_not_measured"
+      },
+      {
+        "content_hash_id": "content_00d4fdf6e48a2d38",
+        "rank": 6,
+        "score": 407604.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_471d9cabce329a66",
+        "rank": 7,
+        "score": 393421.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_1e921148b5fee86a",
+        "rank": 8,
+        "score": 384139.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_7172a7fad43f0998",
+        "rank": 9,
+        "score": 369204.0,
+        "weak_pick": true,
+        "weak_pick_reasons": "engagement_not_measured"
+      },
+      {
+        "content_hash_id": "content_8e1334d6356668e3",
+        "rank": 10,
+        "score": 362658.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_cf651123f1085418",
+        "rank": 11,
+        "score": 360822.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_fd2117c2c6790e4b",
+        "rank": 12,
+        "score": 353760.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_b556f0bd87d6fcca",
+        "rank": 13,
+        "score": 339568.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_36e53e9c707674fc",
+        "rank": 14,
+        "score": 336457.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_95ff62babbfac9c7",
+        "rank": 15,
+        "score": 333917.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_fec55986a1868d62",
+        "rank": 16,
+        "score": 332651.0,
+        "weak_pick": true,
+        "weak_pick_reasons": "engagement_not_measured"
+      },
+      {
+        "content_hash_id": "content_b17c1d1cb0a346d6",
+        "rank": 17,
+        "score": 320097.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_f352b7cfd0b2f434",
+        "rank": 18,
+        "score": 317526.0,
+        "weak_pick": true,
+        "weak_pick_reasons": "engagement_not_measured"
+      },
+      {
+        "content_hash_id": "content_df47d1b976106de4",
+        "rank": 19,
+        "score": 311782.0,
+        "weak_pick": false,
+        "weak_pick_reasons": "none"
+      },
+      {
+        "content_hash_id": "content_7c6373141eae744a",
+        "rank": 20,
+        "score": 311359.0,
+        "weak_pick": true,
+        "weak_pick_reasons": "engagement_not_measured"
+      }
+    ],
+    "top_20_weak_picks": 6,
+    "top_50_weak_picks": 13
+  }
 }
