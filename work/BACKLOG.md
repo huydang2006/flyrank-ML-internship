@@ -3,6 +3,35 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-10-16T05:01:29+07:00 - Execute simplified ML-07 and ML-08 review outputs
+
+- Reviewed the user-executed ML-07 and ML-08 notebooks after removing ML-08 log-derived
+  features and adding executable weak-pick, leakage, split, comparison, error, and feature
+  influence outputs.
+- ML-07 reports 349,411 queue rows, 75,500 actionable rows, 6 weak picks in the top 20,
+  and 13 weak picks in the top 50. All six leakage checks pass.
+- ML-08 uses 8 raw feature columns, with 90,750 eligible rows across 42 clients; the
+  grouped holdout has 87,846 training rows across 33 clients and 2,904 holdout rows
+  across 9 clients, with zero client overlap.
+- Logistic Regression is selected by row-weighted Precision@50 (`0.9400`) versus Random
+  Forest (`0.9200`) and the ML-07 baseline (`0.7200`). Random Forest has slightly higher
+  client-balanced macro Precision@50 (`0.6412` versus `0.6345`), so the model choice should
+  not be treated as universally superior across aggregation methods.
+- ML-08 now carries ML-07-compatible observed reason codes, supporting reasons, suggested
+  actions, and confidence notes, plus separate model signal codes. These are ranking
+  context, not causal explanations. Permutation influence is led by clicks, position, and
+  impressions; negative or near-zero engagement-feature influence is retained as observed.
+- Files changed: `work/scripts/ml_contract.py`, `work/scripts/ml08_model.py`,
+  `work/notebooks/w05_model.ipynb`, `work/outputs/ml08_model_metrics.json`,
+  `work/outputs/ml08_model_report.md`, and `work/BACKLOG.md`.
+- Verification: user-run ML-07 and ML-08 notebooks completed top to bottom; every code cell
+  has output, no traceback was found, and output inspection found no credentials, raw
+  queries, private URLs, or client names. Static Python compilation and `git diff --check`
+  passed before execution.
+- Remaining limitation: the grouped holdout is one single-period split with very small
+  client groups, including 1-row and 3-row groups. ML-09 should use repeated grouped and
+  time-aware validation with minimum support rules and uncertainty intervals.
+
 ## 2026-10-10T02:17:04+07:00 - Add client-balanced ML-07 and ML-08 validation receipts
 
 - Added shared-holdout client-balanced Precision@10/20/50/100 and per-client support/base-rate

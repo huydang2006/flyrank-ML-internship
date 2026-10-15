@@ -108,6 +108,7 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
                 WHEN position_weighted_sum / positioned_impressions <= 50 THEN 'page_3_5'
                 ELSE 'deep'
             END AS position_tier,
+            COUNT(*) AS tier_support_rows,
             SUM(clicks_90d) / NULLIF(SUM(impressions_90d), 0) * 100
                 AS expected_ctr_feature
         FROM feature_base
@@ -133,6 +134,7 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
                 WHEN b.position_weighted_sum / b.positioned_impressions <= 50 THEN 'page_3_5'
                 ELSE 'deep'
             END AS position_tier,
+            t.tier_support_rows,
             t.expected_ctr_feature
         FROM feature_base b
         LEFT JOIN tier_rates t
@@ -176,9 +178,6 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
         data["ga4_available_90d"].eq(1) & data["sessions_90d"].gt(0)
     )
     data["low_volume"] = data["impressions_90d"] < MIN_IMPRESSIONS
-    data["log_impressions_90d"] = np.log1p(data["impressions_90d"])
-    data["log_clicks_90d"] = np.log1p(data["clicks_90d"])
-    data["log_sessions_90d"] = np.log1p(data["sessions_90d"])
     data["baseline_score"] = np.where(
         data["feature_eligible"]
         & data["known_tier"]

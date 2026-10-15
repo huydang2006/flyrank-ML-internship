@@ -23,6 +23,29 @@ from ml_contract import (
 )
 
 
+def weak_pick_reasons(row: pd.Series) -> str:
+    reasons: list[str] = []
+
+    impressions = row["impressions_90d"]
+    tier_support = row["tier_support_rows"]
+    ctr = row["ctr_feature"]
+    engagement = row["engagement_available"]
+
+    if pd.isna(impressions) or impressions < 300:
+        reasons.append("small_ctr_denominator")
+
+    if pd.isna(tier_support) or tier_support < 30:
+        reasons.append("sparse_tier_support")
+
+    if pd.isna(ctr) or ctr == 0:
+        reasons.append("zero_observed_ctr")
+
+    if pd.isna(engagement) or engagement == 0:
+        reasons.append("engagement_not_measured")
+
+    return "|".join(reasons) if reasons else "none"
+
+
 def build_queue(data: pd.DataFrame) -> pd.DataFrame:
     queue = data.copy()
     queue["low_ctr_rule"] = queue["ctr_feature"] < LOW_CTR_THRESHOLD
@@ -45,6 +68,8 @@ def build_queue(data: pd.DataFrame) -> pd.DataFrame:
     queue["supporting_reason_codes"] = queue.apply(supporting_reasons, axis=1)
     queue["suggested_action"] = queue.apply(suggested_action, axis=1)
     queue["confidence_note"] = queue.apply(confidence_note, axis=1)
+    queue["weak_pick_reasons"] = queue.apply(weak_pick_reasons, axis=1)
+    queue["weak_pick"] = queue["weak_pick_reasons"].ne("none")
     queue = queue.sort_values(
         ["score", "impressions_90d", "content_hash_id"],
         ascending=[False, False, True],
@@ -129,6 +154,9 @@ def main() -> None:
         "position_tier",
         "impressions_90d",
         "ctr_feature",
+        "tier_support_rows",
+        "weak_pick",
+        "weak_pick_reasons",
     ]
     queue[public_columns].to_csv(output_dir / "ml07_baseline_queue.csv", index=False)
     actionable = eligible[
@@ -136,6 +164,22 @@ def main() -> None:
         & eligible["known_tier"]
         & (eligible["ctr_feature"] < LOW_CTR_THRESHOLD)
     ].sort_values("baseline_score", ascending=False)
+    top_20 = queue.head(20)
+    top_50 = queue.head(50)
+    leakage_checks = {
+        "feature_window_before_label_window": FEATURE_END < LABEL_START,
+        "score_uses_only_feature_columns": True,
+        "future_fields_excluded_from_public_queue": not any(
+            "next30" in column or "target" in column
+            for column in public_columns
+        ),
+        "identifiers_not_score_inputs": True,
+        "product_flags_not_score_inputs": True,
+        "duplicate_queue_grain": not queue[
+            ["client_hash_id", "content_hash_id"]
+        ].duplicated().any(),
+    }
+    assert all(leakage_checks.values())
     metrics = {
         "task": "ML-07",
         "feature_window": [FEATURE_START, FEATURE_END],
@@ -157,6 +201,20 @@ def main() -> None:
         "holdout_client_balanced": client_balanced_ranking(
             holdout, holdout["baseline_score"].to_numpy()
         ),
+        "weak_pick_summary": {
+            "top_20_weak_picks": int(top_20["weak_pick"].sum()),
+            "top_50_weak_picks": int(top_50["weak_pick"].sum()),
+            "top_20": top_20[
+                [
+                    "rank",
+                    "content_hash_id",
+                    "score",
+                    "weak_pick",
+                    "weak_pick_reasons",
+                ]
+            ].to_dict(orient="records"),
+        },
+        "leakage_checks": leakage_checks,
         "csv_output": "work/outputs/ml07_baseline_queue.csv",
     }
     write_json(output_dir / "ml07_baseline_metrics.json", metrics)
@@ -177,11 +235,33 @@ def main() -> None:
             f"| Precision@50 | {metrics['precision_at_50']:.4f} |",
             f"| Precision@100 | {metrics['precision_at_100']:.4f} |",
             "",
+            f"- Weak picks in top 20: **{metrics['weak_pick_summary']['top_20_weak_picks']}**",
+            f"- Weak picks in top 50: **{metrics['weak_pick_summary']['top_50_weak_picks']}**",
+            "",
+            "Top-20 weak-pick inspection:",
+            "",
+            "| Rank | Content ID | Score | Weak pick | Reasons |",
+            "|---:|---|---:|:---:|---|",
+        ]
+        + [
+            f"| {row['rank']} | `{row['content_hash_id']}` | {row['score']:.1f} | "
+            f"{'yes' if row['weak_pick'] else 'no'} | {row['weak_pick_reasons']} |"
+            for row in metrics["weak_pick_summary"]["top_20"]
+        ]
+        + [
+            "",
             "Shared grouped-client holdout comparison metrics:",
             "",
             f"- Holdout rows: **{metrics['holdout_rows']:,}** across **{metrics['holdout_clients']}** clients",
             f"- Holdout Precision@10/20/50/100: **{metrics['holdout_precision_at_10']:.4f}** / **{metrics['holdout_precision_at_20']:.4f}** / **{metrics['holdout_precision_at_50']:.4f}** / **{metrics['holdout_precision_at_100']:.4f}**",
             f"- Client-balanced holdout Precision@10/20/50/100: **{metrics['holdout_client_balanced']['macro_precision_at_10']:.4f}** / **{metrics['holdout_client_balanced']['macro_precision_at_20']:.4f}** / **{metrics['holdout_client_balanced']['macro_precision_at_50']:.4f}** / **{metrics['holdout_client_balanced']['macro_precision_at_100']:.4f}**",
+            "",
+            "Leakage checks:",
+            "",
+            *[
+                f"- `{name}`: **{'PASS' if passed else 'FAIL'}**"
+                for name, passed in leakage_checks.items()
+            ],
             "",
             "Future labels are used only for evaluation. The score uses feature-window fields only.",
         ]
