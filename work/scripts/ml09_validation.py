@@ -155,17 +155,7 @@ def sensitivity(model_data: pd.DataFrame) -> dict[str, object]:
             ),
         }
 
-    support = {}
-    for minimum in (1, 10, 30, 100):
-        eligible = model_data[model_data["tier_support_rows"] >= minimum]
-        support[str(minimum)] = {
-            "rows": int(len(eligible)),
-            "clients": int(eligible["client_hash_id"].nunique()),
-            "base_rate": float(eligible["target"].mean())
-            if len(eligible)
-            else None,
-        }
-    return {"thresholds": thresholds, "tier_support": support}
+    return {"thresholds": thresholds}
 
 
 def run(output_dir: Path) -> None:
@@ -198,6 +188,9 @@ def run(output_dir: Path) -> None:
             "The rolling checks use 90-day feature windows and monthly label windows.",
             "Very small client groups make per-client Precision@K unstable.",
             "All results are directional ranking evidence, not causal effects.",
+            "The eligible population is restricted to pages with at least 100 impressions "
+            "in the April 2026 label window, so it is filtered on a future-window quantity "
+            "(volume, not the label value); this is a denominator floor, not a label-derived rule.",
         ],
     }
     assert all(payload["leakage_checks"].values())

@@ -12,7 +12,7 @@
         "clients": 9,
         "correct_at_50": 36.0,
         "coverage_at_50": 0.01721763085399449,
-        "macro_precision_at_50": 0.5345299145299145,
+        "macro_precision_at_50": 0.5323076923076923,
         "precision_at_10": 0.7,
         "precision_at_100": 0.62,
         "precision_at_20": 0.75,
@@ -84,7 +84,7 @@
         "clients": 9,
         "correct_at_50": 28.0,
         "coverage_at_50": 0.005031699708161417,
-        "macro_precision_at_50": 0.4931623931623932,
+        "macro_precision_at_50": 0.4909401709401709,
         "precision_at_10": 0.7,
         "precision_at_100": 0.59,
         "precision_at_20": 0.6,
@@ -120,7 +120,7 @@
         "clients": 9,
         "correct_at_50": 26.0,
         "coverage_at_50": 0.0030389594602808,
-        "macro_precision_at_50": 0.5391217359638413,
+        "macro_precision_at_50": 0.536899513741619,
         "precision_at_10": 0.6,
         "precision_at_100": 0.52,
         "precision_at_20": 0.55,
@@ -199,7 +199,8 @@
   "limitations": [
     "The rolling checks use 90-day feature windows and monthly label windows.",
     "Very small client groups make per-client Precision@K unstable.",
-    "All results are directional ranking evidence, not causal effects."
+    "All results are directional ranking evidence, not causal effects.",
+    "The eligible population is restricted to pages with at least 100 impressions in the April 2026 label window, so it is filtered on a future-window quantity (volume, not the label value); this is a denominator floor, not a label-derived rule."
   ],
   "metric": "Precision@K with K in 10, 20, 50, 100",
   "sensitivity": {
@@ -218,28 +219,6 @@
         "actionable_rows": 86559,
         "base_rate": 0.5855537190082645,
         "precision_at_50": 0.28
-      }
-    },
-    "tier_support": {
-      "1": {
-        "base_rate": 0.5855537190082645,
-        "clients": 42,
-        "rows": 90750
-      },
-      "10": {
-        "base_rate": 0.5855537190082645,
-        "clients": 42,
-        "rows": 90750
-      },
-      "100": {
-        "base_rate": 0.5855537190082645,
-        "clients": 42,
-        "rows": 90750
-      },
-      "30": {
-        "base_rate": 0.5855537190082645,
-        "clients": 42,
-        "rows": 90750
       }
     }
   },
@@ -341,7 +320,7 @@
         "clients": 42,
         "correct_at_50": 19.0,
         "coverage_at_50": 0.0005509641873278236,
-        "macro_precision_at_50": 0.5587586870105666,
+        "macro_precision_at_50": 0.5597110679629476,
         "precision_at_10": 0.3,
         "precision_at_100": 0.34,
         "precision_at_20": 0.4,
