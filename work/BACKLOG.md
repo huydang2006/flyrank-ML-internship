@@ -3,6 +3,21 @@
 This file is the persistent handoff log for future sessions. Append entries;
 do not rewrite history. Use local time with an explicit offset.
 
+## 2026-10-18T12:00:00+07:00 - Tighten ML-09 validation disclosure and trim no-op sensitivity
+
+- Added a limitation to `work/scripts/ml09_validation.py` documenting that the eligible
+  population is filtered on `impressions_next30d >= MIN_IMPRESSIONS`, a future-window
+  volume floor (not a label-derived rule), per the hunting-leakage-and-validating skill's
+  requirement to disclose outcome-window population selection.
+- Removed the no-op `tier_support` sensitivity block (floors 1/10/30/100 returned identical
+  90,750 rows); `sensitivity()` now returns only the CTR-threshold sensitivity.
+- Files changed: `work/scripts/ml09_validation.py`.
+- Verification: `python -m py_compile` passed; `git diff --check` clean; the notebook pulls
+  `limitations` live from the JSON so cell 14 will print the new line on re-run.
+- Remaining: re-run `w06_validation_audit.ipynb` to refresh
+  `work/outputs/ml09_validation_metrics.json` / `ml09_validation_report.md` and commit the
+  receipts. (Not executed here — warehouse needs HF_TOKEN; user runs.)
+
 ## 2026-10-16T05:01:29+07:00 - Execute simplified ML-07 and ML-08 review outputs
 
 - Reviewed the user-executed ML-07 and ML-08 notebooks after removing ML-08 log-derived
