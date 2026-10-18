@@ -1,0 +1,382 @@
+{
+  "base_rate": 0.5855537190082645,
+  "feature_window": [
+    "2026-01-01",
+    "2026-03-31"
+  ],
+  "grouped_validation": [
+    {
+      "baseline": {
+        "average_precision": 0.6114553029788394,
+        "base_rate": 0.4965564738292011,
+        "clients": 9,
+        "correct_at_50": 36.0,
+        "coverage_at_50": 0.01721763085399449,
+        "macro_precision_at_50": 0.5345299145299145,
+        "precision_at_10": 0.7,
+        "precision_at_100": 0.62,
+        "precision_at_20": 0.75,
+        "precision_at_50": 0.72,
+        "roc_auc": 0.6835273057066583,
+        "rows": 2904
+      },
+      "client_overlap": 0,
+      "model": {
+        "average_precision": 0.7693940316843282,
+        "base_rate": 0.4965564738292011,
+        "clients": 9,
+        "correct_at_50": 47.0,
+        "coverage_at_50": 0.01721763085399449,
+        "macro_precision_at_50": 0.6345299145299145,
+        "precision_at_10": 0.9,
+        "precision_at_100": 0.92,
+        "precision_at_20": 0.95,
+        "precision_at_50": 0.94,
+        "roc_auc": 0.7890284811147307,
+        "rows": 2904
+      },
+      "seed": 42,
+      "test_clients": 9,
+      "test_rows": 2904,
+      "train_clients": 33,
+      "train_rows": 87846
+    },
+    {
+      "baseline": {
+        "average_precision": 0.5555679750455966,
+        "base_rate": 0.5884884161244793,
+        "clients": 9,
+        "correct_at_50": 13.0,
+        "coverage_at_50": 0.0017212296464594306,
+        "macro_precision_at_50": 0.5572751322751323,
+        "precision_at_10": 0.3,
+        "precision_at_100": 0.39,
+        "precision_at_20": 0.25,
+        "precision_at_50": 0.26,
+        "roc_auc": 0.49925212975174466,
+        "rows": 29049
+      },
+      "client_overlap": 0,
+      "model": {
+        "average_precision": 0.814979077873409,
+        "base_rate": 0.5884884161244793,
+        "clients": 9,
+        "correct_at_50": 48.0,
+        "coverage_at_50": 0.0017212296464594306,
+        "macro_precision_at_50": 0.7328306878306878,
+        "precision_at_10": 1.0,
+        "precision_at_100": 0.95,
+        "precision_at_20": 0.95,
+        "precision_at_50": 0.96,
+        "roc_auc": 0.7825491086211681,
+        "rows": 29049
+      },
+      "seed": 7,
+      "test_clients": 9,
+      "test_rows": 29049,
+      "train_clients": 33,
+      "train_rows": 61701
+    },
+    {
+      "baseline": {
+        "average_precision": 0.48258438036435636,
+        "base_rate": 0.5309449532051927,
+        "clients": 9,
+        "correct_at_50": 28.0,
+        "coverage_at_50": 0.005031699708161417,
+        "macro_precision_at_50": 0.4931623931623932,
+        "precision_at_10": 0.7,
+        "precision_at_100": 0.59,
+        "precision_at_20": 0.6,
+        "precision_at_50": 0.56,
+        "roc_auc": 0.4935275028265938,
+        "rows": 9937
+      },
+      "client_overlap": 0,
+      "model": {
+        "average_precision": 0.7806830162275531,
+        "base_rate": 0.5309449532051927,
+        "clients": 9,
+        "correct_at_50": 45.0,
+        "coverage_at_50": 0.005031699708161417,
+        "macro_precision_at_50": 0.6287179487179487,
+        "precision_at_10": 0.9,
+        "precision_at_100": 0.92,
+        "precision_at_20": 0.95,
+        "precision_at_50": 0.9,
+        "roc_auc": 0.7835942561467334,
+        "rows": 9937
+      },
+      "seed": 19,
+      "test_clients": 9,
+      "test_rows": 9937,
+      "train_clients": 33,
+      "train_rows": 80813
+    },
+    {
+      "baseline": {
+        "average_precision": 0.5773147738595091,
+        "base_rate": 0.5497477663647967,
+        "clients": 9,
+        "correct_at_50": 26.0,
+        "coverage_at_50": 0.0030389594602808,
+        "macro_precision_at_50": 0.5391217359638413,
+        "precision_at_10": 0.6,
+        "precision_at_100": 0.52,
+        "precision_at_20": 0.55,
+        "precision_at_50": 0.52,
+        "roc_auc": 0.5954722502796791,
+        "rows": 16453
+      },
+      "client_overlap": 0,
+      "model": {
+        "average_precision": 0.7481950545351413,
+        "base_rate": 0.5497477663647967,
+        "clients": 9,
+        "correct_at_50": 44.0,
+        "coverage_at_50": 0.0030389594602808,
+        "macro_precision_at_50": 0.6502328470749524,
+        "precision_at_10": 1.0,
+        "precision_at_100": 0.89,
+        "precision_at_20": 1.0,
+        "precision_at_50": 0.88,
+        "roc_auc": 0.7645075259650871,
+        "rows": 16453
+      },
+      "seed": 31,
+      "test_clients": 9,
+      "test_rows": 16453,
+      "train_clients": 33,
+      "train_rows": 74297
+    },
+    {
+      "baseline": {
+        "average_precision": 0.621853816542275,
+        "base_rate": 0.5772071755188182,
+        "clients": 9,
+        "correct_at_50": 28.0,
+        "coverage_at_50": 0.002512436560976835,
+        "macro_precision_at_50": 0.5700854700854702,
+        "precision_at_10": 0.7,
+        "precision_at_100": 0.52,
+        "precision_at_20": 0.6,
+        "precision_at_50": 0.56,
+        "roc_auc": 0.6247467321240292,
+        "rows": 19901
+      },
+      "client_overlap": 0,
+      "model": {
+        "average_precision": 0.7929938997212638,
+        "base_rate": 0.5772071755188182,
+        "clients": 9,
+        "correct_at_50": 46.0,
+        "coverage_at_50": 0.002512436560976835,
+        "macro_precision_at_50": 0.8278632478632478,
+        "precision_at_10": 0.9,
+        "precision_at_100": 0.92,
+        "precision_at_20": 0.9,
+        "precision_at_50": 0.92,
+        "roc_auc": 0.7797342720118767,
+        "rows": 19901
+      },
+      "seed": 61,
+      "test_clients": 9,
+      "test_rows": 19901,
+      "train_clients": 33,
+      "train_rows": 70849
+    }
+  ],
+  "label_window": [
+    "2026-04-01",
+    "2026-04-30"
+  ],
+  "leakage_checks": {
+    "duplicate_grain": true,
+    "feature_window_before_label_window": true,
+    "future_fields_excluded_from_features": true,
+    "identifiers_excluded_from_features": true
+  },
+  "limitations": [
+    "The rolling checks use 90-day feature windows and monthly label windows.",
+    "Very small client groups make per-client Precision@K unstable.",
+    "All results are directional ranking evidence, not causal effects."
+  ],
+  "metric": "Precision@K with K in 10, 20, 50, 100",
+  "sensitivity": {
+    "thresholds": {
+      "0.25": {
+        "actionable_rows": 56510,
+        "base_rate": 0.5855537190082645,
+        "precision_at_50": 0.62
+      },
+      "0.5": {
+        "actionable_rows": 75500,
+        "base_rate": 0.5855537190082645,
+        "precision_at_50": 0.38
+      },
+      "1.0": {
+        "actionable_rows": 86559,
+        "base_rate": 0.5855537190082645,
+        "precision_at_50": 0.28
+      }
+    },
+    "tier_support": {
+      "1": {
+        "base_rate": 0.5855537190082645,
+        "clients": 42,
+        "rows": 90750
+      },
+      "10": {
+        "base_rate": 0.5855537190082645,
+        "clients": 42,
+        "rows": 90750
+      },
+      "100": {
+        "base_rate": 0.5855537190082645,
+        "clients": 42,
+        "rows": 90750
+      },
+      "30": {
+        "base_rate": 0.5855537190082645,
+        "clients": 42,
+        "rows": 90750
+      }
+    }
+  },
+  "target": "future CTR below half of feature position-tier pooled CTR",
+  "task": "ML-09",
+  "time_aware_validation": [
+    {
+      "baseline": {
+        "average_precision": 0.5126462866944025,
+        "base_rate": 0.5419498962821127,
+        "clients": 28,
+        "correct_at_50": 11.0,
+        "coverage_at_50": 0.0007978299026647519,
+        "macro_precision_at_50": 0.48477207977207987,
+        "precision_at_10": 0.1,
+        "precision_at_100": 0.2,
+        "precision_at_20": 0.15,
+        "precision_at_50": 0.22,
+        "roc_auc": 0.5200399687135586,
+        "rows": 62670
+      },
+      "model": {
+        "average_precision": 0.678943141151144,
+        "base_rate": 0.5419498962821127,
+        "clients": 28,
+        "correct_at_50": 44.0,
+        "coverage_at_50": 0.0007978299026647519,
+        "macro_precision_at_50": 0.624057794057794,
+        "precision_at_10": 0.8,
+        "precision_at_100": 0.82,
+        "precision_at_20": 0.9,
+        "precision_at_50": 0.88,
+        "roc_auc": 0.7192477886081536,
+        "rows": 62670
+      },
+      "test_rows": 62670,
+      "test_window": [
+        "2025-11-01",
+        "2026-01-29",
+        "2026-02-01",
+        "2026-02-28"
+      ],
+      "train_rows": 53587,
+      "train_window": [
+        "2025-10-01",
+        "2025-12-29",
+        "2026-01-01",
+        "2026-01-31"
+      ]
+    },
+    {
+      "baseline": {
+        "average_precision": 0.5348040134343534,
+        "base_rate": 0.5499209425686015,
+        "clients": 35,
+        "correct_at_50": 12.0,
+        "coverage_at_50": 0.0006375599306334796,
+        "macro_precision_at_50": 0.4750288628271822,
+        "precision_at_10": 0.0,
+        "precision_at_100": 0.24,
+        "precision_at_20": 0.1,
+        "precision_at_50": 0.24,
+        "roc_auc": 0.5395363438754062,
+        "rows": 78424
+      },
+      "model": {
+        "average_precision": 0.7535586630035321,
+        "base_rate": 0.5499209425686015,
+        "clients": 35,
+        "correct_at_50": 45.0,
+        "coverage_at_50": 0.0006375599306334796,
+        "macro_precision_at_50": 0.6681717199700393,
+        "precision_at_10": 0.9,
+        "precision_at_100": 0.87,
+        "precision_at_20": 0.9,
+        "precision_at_50": 0.9,
+        "roc_auc": 0.7462665814646632,
+        "rows": 78424
+      },
+      "test_rows": 78424,
+      "test_window": [
+        "2025-12-01",
+        "2026-02-28",
+        "2026-03-01",
+        "2026-03-31"
+      ],
+      "train_rows": 62670,
+      "train_window": [
+        "2025-11-01",
+        "2026-01-29",
+        "2026-02-01",
+        "2026-02-28"
+      ]
+    },
+    {
+      "baseline": {
+        "average_precision": 0.5890450485702027,
+        "base_rate": 0.5855537190082645,
+        "clients": 42,
+        "correct_at_50": 19.0,
+        "coverage_at_50": 0.0005509641873278236,
+        "macro_precision_at_50": 0.5587586870105666,
+        "precision_at_10": 0.3,
+        "precision_at_100": 0.34,
+        "precision_at_20": 0.4,
+        "precision_at_50": 0.38,
+        "roc_auc": 0.559035106227021,
+        "rows": 90750
+      },
+      "model": {
+        "average_precision": 0.7570887615571185,
+        "base_rate": 0.5855537190082645,
+        "clients": 42,
+        "correct_at_50": 36.0,
+        "coverage_at_50": 0.0005509641873278236,
+        "macro_precision_at_50": 0.7073301155819953,
+        "precision_at_10": 0.8,
+        "precision_at_100": 0.72,
+        "precision_at_20": 0.7,
+        "precision_at_50": 0.72,
+        "roc_auc": 0.7485677508771393,
+        "rows": 90750
+      },
+      "test_rows": 90750,
+      "test_window": [
+        "2026-01-01",
+        "2026-03-31",
+        "2026-04-01",
+        "2026-04-30"
+      ],
+      "train_rows": 78424,
+      "train_window": [
+        "2025-12-01",
+        "2026-02-28",
+        "2026-03-01",
+        "2026-03-31"
+      ]
+    }
+  ]
+}
