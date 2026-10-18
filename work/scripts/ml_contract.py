@@ -43,7 +43,13 @@ def connect() -> duckdb.DuckDBPyConnection:
     return connection
 
 
-def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, pd.DataFrame]:
+def load_contract(
+    connection: duckdb.DuckDBPyConnection,
+    feature_start: str = FEATURE_START,
+    feature_end: str = FEATURE_END,
+    label_start: str = LABEL_START,
+    label_end: str = LABEL_END,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     source = connection.sql(
         f"SELECT COUNT(*) AS rows, MIN(report_date) AS min_date, "
         f"MAX(report_date) AS max_date FROM {FACT}"
@@ -58,7 +64,7 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
         FROM (
             SELECT report_date, client_hash_id, content_hash_id
             FROM {FACT}
-            WHERE report_date BETWEEN DATE '{FEATURE_START}' AND DATE '{FEATURE_END}'
+            WHERE report_date BETWEEN DATE '{feature_start}' AND DATE '{feature_end}'
             GROUP BY 1, 2, 3
             HAVING COUNT(*) > 1
         )
@@ -91,7 +97,7 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
             MAX(CASE WHEN ga4_data_available IS TRUE THEN 1 ELSE 0 END)
                 AS ga4_available_90d
         FROM {FACT}
-        WHERE report_date BETWEEN DATE '{FEATURE_START}' AND DATE '{FEATURE_END}'
+        WHERE report_date BETWEEN DATE '{feature_start}' AND DATE '{feature_end}'
         GROUP BY 1, 2
         """
     )
@@ -160,7 +166,7 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
             SUM(CASE WHEN gsc_data_available IS TRUE
                 THEN COALESCE(gsc_clicks, 0) ELSE 0 END) AS clicks_next30d
         FROM {FACT}
-        WHERE report_date BETWEEN DATE '{LABEL_START}' AND DATE '{LABEL_END}'
+        WHERE report_date BETWEEN DATE '{label_start}' AND DATE '{label_end}'
         GROUP BY 1, 2
         """
     ).df()
@@ -196,7 +202,7 @@ def load_contract(connection: duckdb.DuckDBPyConnection) -> tuple[pd.DataFrame, 
     ].copy()
     assert len(eligible) > 0 and eligible["target"].nunique() == 2
     assert not eligible[["client_hash_id", "content_hash_id"]].duplicated().any()
-    assert FEATURE_END < LABEL_START
+    assert feature_end < label_start
     return data, eligible
 
 
