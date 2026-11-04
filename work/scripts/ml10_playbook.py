@@ -2,15 +2,20 @@ from __future__ import annotations
 
 import csv
 import json
+import textwrap
 from pathlib import Path
+
+import matplotlib.pyplot as plt
 
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = ROOT / "work" / "outputs"
+FIGURES_DIR = ROOT / "work" / "figures"
 METRICS_PATH = OUTPUT_DIR / "ml09_validation_metrics.json"
 QUEUE_PATH = OUTPUT_DIR / "ml08_model_queue.csv"
 PUBLIC_QUEUE_PATH = OUTPUT_DIR / "ml10_action_queue_public.csv"
 REPORT_PATH = OUTPUT_DIR / "ml10_action_playbook.md"
+ACTION_MIX_PATH = FIGURES_DIR / "ml10_top50_action_mix.png"
 
 
 def export_public_queue() -> int:
@@ -27,6 +32,33 @@ def export_public_queue() -> int:
             writer.writerow({field: row[field] for field in fields})
             count += 1
     return count
+
+
+def save_action_mix_plot() -> None:
+    with PUBLIC_QUEUE_PATH.open(newline="", encoding="utf-8") as source:
+        rows = list(csv.DictReader(source))[:50]
+    counts: dict[str, int] = {}
+    for row in rows:
+        action = row["suggested_action"]
+        counts[action] = counts.get(action, 0) + 1
+    raw_labels = list(reversed(counts))
+    labels = [
+        "\n".join(textwrap.wrap(label, width=28, max_lines=2))
+        for label in raw_labels
+    ]
+    values = [counts[label] for label in raw_labels]
+
+    fig, axis = plt.subplots(figsize=(8, 4.5))
+    axis.barh(labels, values, color="#1f77b4")
+    axis.set_xlabel("Rows in top-50 review queue")
+    axis.set_title("ML-10 suggested action mix at review budget 50")
+    axis.set_xlim(0, max(values) + 5)
+    for index, value in enumerate(values):
+        axis.text(value + 0.3, index, str(value), va="center")
+    fig.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    fig.savefig(ACTION_MIX_PATH, dpi=160)
+    plt.close(fig)
 
 
 def write_report(metrics: dict, queue_rows: int) -> None:
@@ -78,6 +110,7 @@ def write_report(metrics: dict, queue_rows: int) -> None:
         "## Paper-safe exports",
         "",
         f"- Public queue rows exported: **{queue_rows:,}**.",
+        "- The top-50 suggested-action mix is exported as a paper-safe figure.",
         "- Pseudonymous client and content identifiers are omitted from the paper-facing queue.",
     ]
     REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -86,9 +119,11 @@ def write_report(metrics: dict, queue_rows: int) -> None:
 def main() -> None:
     metrics = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
     queue_rows = export_public_queue()
+    save_action_mix_plot()
     write_report(metrics, queue_rows)
     print(f"Wrote {PUBLIC_QUEUE_PATH}")
     print(f"Wrote {REPORT_PATH}")
+    print(f"Wrote {ACTION_MIX_PATH}")
 
 
 if __name__ == "__main__":

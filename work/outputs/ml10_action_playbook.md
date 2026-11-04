@@ -41,4 +41,5 @@ Review the first 50 rows per cycle. Keep the observed reason code, supporting si
 ## Paper-safe exports
 
 - Public queue rows exported: **2,904**.
+- The top-50 suggested-action mix is exported as a paper-safe figure.
 - Pseudonymous client and content identifiers are omitted from the paper-facing queue.
