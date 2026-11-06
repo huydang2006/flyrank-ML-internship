@@ -167,17 +167,40 @@ def save_validation_plot(metrics: dict[str, object], figures_dir: Path) -> None:
     model = [row["model"]["precision_at_50"] for row in grouped + time_aware]
     baseline = [row["baseline"]["precision_at_50"] for row in grouped + time_aware]
 
-    fig, axis = plt.subplots(figsize=(8, 4.5))
-    positions = range(len(labels))
-    axis.bar([p - 0.18 for p in positions], model, width=0.36, label="Logistic Regression")
-    axis.bar([p + 0.18 for p in positions], baseline, width=0.36, label="Rule baseline")
-    axis.set_xticks(list(positions), labels, rotation=35, ha="right")
+    fig, axis = plt.subplots(figsize=(9.6, 5.2), dpi=100)
+    axis.set_xlim(0, 1)
     axis.set_ylim(0, 1)
-    axis.set_ylabel("Precision@50")
-    axis.set_title("ML-09 validation precision at review budget 50")
-    axis.legend()
+    axis.axis("off")
+    axis.text(0.5, 0.94, "Validation precision at review budget 50",
+              ha="center", va="center", fontsize=24, color="#16232a")
+    for tick in (0, 0.25, 0.5, 0.75, 1):
+        x_position = 0.20 + tick * 0.76
+        axis.text(x_position, 0.08, f"{tick:g}", ha="center", va="center",
+                  fontsize=10, color="#68747a")
+    step = 0.72 / max(len(labels), 1)
+    bar_height = min(0.06, step * 0.32)
+    for index, (label, model_value, baseline_value) in enumerate(
+        zip(labels, model, baseline)
+    ):
+        center = 0.82 - index * step
+        axis.text(0.185, center, label, ha="right", va="center",
+                  fontsize=13, color="#27343b")
+        axis.barh(center + bar_height / 2, model_value * 0.76, left=0.20,
+                  height=bar_height, color="#4E79A7", edgecolor="none")
+        axis.barh(center - bar_height / 2, baseline_value * 0.76, left=0.20,
+                  height=bar_height, color="#8C6BB1", edgecolor="none")
+        axis.text(0.20 + model_value * 0.76 + 0.008, center + bar_height / 2,
+                  f"{model_value:.2f}", va="center", fontsize=11, color="#27343b")
+        axis.text(0.20 + baseline_value * 0.76 + 0.008, center - bar_height / 2,
+                  f"{baseline_value:.2f}", va="center", fontsize=11, color="#27343b")
+    axis.legend(
+        [plt.Rectangle((0, 0), 1, 1, color=color) for color in ["#4E79A7", "#8C6BB1"]],
+        ["Logistic Regression", "Rule baseline"],
+        loc="lower center", bbox_to_anchor=(0.59, 0.03), ncol=2,
+        frameon=False, fontsize=11,
+    )
     fig.tight_layout()
-    fig.savefig(figures_dir / "ml09_validation_precision_at_50.png", dpi=160)
+    fig.savefig(figures_dir / "validation_precision_at_50.png", dpi=160)
     plt.close(fig)
 
 
@@ -187,22 +210,29 @@ def save_sensitivity_plot(metrics: dict[str, object], figures_dir: Path) -> None
     actionable = [thresholds[value]["actionable_rows"] for value in thresholds]
     precision = [thresholds[value]["precision_at_50"] for value in thresholds]
 
-    fig, axis = plt.subplots(figsize=(7, 4.5))
-    axis.plot(x, precision, marker="o", color="#1f77b4")
-    axis.set_xlabel("CTR threshold (%)")
-    axis.set_ylabel("Precision@50")
+    fig, axis = plt.subplots(figsize=(9.6, 5.2), dpi=100)
+    axis.set_xlim(0, 1)
     axis.set_ylim(0, 1)
-    axis.set_title("Sensitivity to baseline CTR threshold")
-    for threshold, score, rows in zip(x, precision, actionable):
-        axis.annotate(
-            f"{score:.2f}\n{rows:,} rows",
-            (threshold, score),
-            textcoords="offset points",
-            xytext=(0, 8),
-            ha="center",
-        )
+    axis.axis("off")
+    axis.text(0.5, 0.94, "Sensitivity to baseline CTR threshold",
+              ha="center", va="center", fontsize=24, color="#16232a")
+    step = 0.72 / max(len(x), 1)
+    for index, (threshold, score, rows) in enumerate(zip(x, precision, actionable)):
+        center = 0.82 - index * step
+        axis.text(0.185, center + 0.02, f"{threshold:g}%", ha="right",
+                  va="center", fontsize=13, color="#27343b")
+        width = 0.76 * score
+        axis.barh(center + 0.02, width, left=0.20, height=min(0.10, step * 0.55),
+                  color="#4E79A7", edgecolor="none")
+        axis.text(0.20 + width + 0.008, center + 0.02,
+                  f"{score:.2f} | {rows:,} rows", va="center",
+                  fontsize=13, color="#27343b")
+    for tick in (0, 0.25, 0.5, 0.75, 1):
+        x_position = 0.20 + tick * 0.76
+        axis.text(x_position, 0.08, f"{tick:g}", ha="center", va="center",
+                  fontsize=10, color="#68747a")
     fig.tight_layout()
-    fig.savefig(figures_dir / "ml09_threshold_sensitivity.png", dpi=160)
+    fig.savefig(figures_dir / "threshold_sensitivity.png", dpi=160)
     plt.close(fig)
 
 
@@ -279,9 +309,8 @@ def run(output_dir: Path) -> None:
     (output_dir / "ml09_validation_report.md").write_text(
         "\n".join(report) + "\n", encoding="utf-8"
     )
-    print(f"Wrote {output_dir / 'ml09_validation_metrics.json'}")
-    print(f"Wrote {output_dir / 'ml09_validation_report.md'}")
-    print(f"Wrote figures to {figures_dir}")
+    print(f"Wrote {'ml09_validation_metrics.json'}")
+    print(f"Wrote {'ml09_validation_report.md'}")
 
 
 def main() -> None:

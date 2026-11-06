@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -43,6 +44,7 @@ NUMERIC_FEATURES = [
     "engagement_available",
 ]
 REVIEW_BUDGET = 50
+FIGURES_DIR = Path(__file__).resolve().parents[2] / "work" / "figures"
 
 
 def build_models() -> dict[str, object]:
@@ -78,6 +80,185 @@ def build_preprocessor() -> ColumnTransformer:
     )
 
 
+def confidence_state(row: pd.Series) -> str:
+    note = row["confidence_note"]
+    if (
+        row["impressions_90d"] >= 1000
+        and "verify manually" not in note
+        and "engagement not measured" not in note
+    ):
+        return "high"
+    if row["impressions_90d"] >= 300:
+        return "medium"
+    return "low"
+
+
+def save_count_plot(
+    counts: pd.Series,
+    title: str,
+    path: Path,
+    color: str,
+    value_format: str = "{:,.3g}",
+) -> None:
+    labels = [str(label) for label in counts.index]
+    values = counts.to_numpy(dtype=float)
+    maximum = max(float(values.max()) if len(values) else 0, 1)
+    fig, axis = plt.subplots(figsize=(9.6, 5.2), dpi=100)
+    axis.set_xlim(0, 1)
+    axis.set_ylim(0, 1)
+    axis.axis("off")
+    axis.text(0.5, 0.94, title, ha="center", va="center", fontsize=24, color="#16232a")
+    top, bottom = 0.82, 0.10
+    step = (top - bottom) / max(len(labels), 1)
+    bar_height = min(0.11, step * 0.72)
+    for index, (label, value) in enumerate(zip(labels, values)):
+        y = top - index * step - bar_height / 2
+        width = 0.76 * value / maximum
+        axis.text(0.29, y + bar_height / 2, label[:32], ha="right", va="center",
+                  fontsize=13, color="#27343b")
+        axis.barh(y + bar_height / 2, width, left=0.31, height=bar_height,
+                  color=color, edgecolor="none")
+        axis.text(0.31 + width + 0.008, y + bar_height / 2,
+                  value_format.format(value), ha="left", va="center",
+                  fontsize=13, color="#27343b")
+    fig.tight_layout()
+    fig.savefig(path, dpi=160)
+    plt.close(fig)
+
+
+def save_queue_figures(queue: pd.DataFrame, figures_dir: Path) -> None:
+    confidence = queue.assign(
+        confidence_state=queue.apply(confidence_state, axis=1)
+    )
+    save_count_plot(
+        confidence["confidence_state"].value_counts().reindex(
+            ["high", "medium", "low"], fill_value=0
+        ),
+        "Review queue confidence mix",
+        figures_dir / "confidence_mix.png",
+        "#6F4E7C",
+        value_format="{:,.0f}",
+    )
+
+    reason_sets = queue.apply(
+        lambda row: set(
+            [row["primary_reason_code"]]
+            + str(row["supporting_reason_codes"]).split("|")
+        )
+        - {"", "none"},
+        axis=1,
+    )
+    reason_counts = pd.Series(
+        reason for reasons in reason_sets for reason in reasons
+    ).value_counts()
+    save_count_plot(
+        reason_counts.sort_values(ascending=False),
+        "All refresh reason codes",
+        figures_dir / "reason_code_mix.png",
+        "#8C6BB1",
+        value_format="{:,.0f}",
+    )
+
+
+def save_feature_importance_plot(
+    feature_influence: list[dict[str, object]], figures_dir: Path
+) -> None:
+    influence = pd.DataFrame(feature_influence).sort_values("mean_score_decrease")
+    labels = influence["feature"].astype(str).tolist()
+    values = influence["mean_score_decrease"].to_numpy(dtype=float)
+    deviations = influence["std_score_decrease"].to_numpy(dtype=float)
+    maximum = max(abs(values).max() if len(values) else 0, 0.001)
+    fig, axis = plt.subplots(figsize=(9.6, 5.2), dpi=100)
+    axis.set_xlim(0, 1)
+    axis.set_ylim(0, 1)
+    axis.axis("off")
+    axis.text(0.5, 0.94, "Top model feature influence", ha="center",
+              va="center", fontsize=24, color="#16232a")
+    axis.text(0.59, 0.06, "permutation mean score decrease", ha="center",
+              va="center", fontsize=12, color="#27343b")
+    top, bottom = 0.82, 0.12
+    step = (top - bottom) / max(len(labels), 1)
+    bar_height = min(0.07, step * 0.72)
+    zero = 0.59
+    scale = 0.34 / maximum
+    for index, (label, value) in enumerate(zip(labels, values)):
+        y = top - index * step - bar_height / 2
+        width = abs(value) * scale
+        left = zero if value >= 0 else zero - width
+        axis.text(0.185, y + bar_height / 2, label[:32], ha="right", va="center",
+                  fontsize=13, color="#27343b")
+        axis.barh(y + bar_height / 2, width, left=left, height=bar_height,
+                  color="#4E79A7" if value >= 0 else "#E15759", edgecolor="none")
+        axis.errorbar(zero + value * scale, y + bar_height / 2,
+                      xerr=deviations[index] * scale, fmt="none",
+                      ecolor="#27343b", elinewidth=1, capsize=2)
+        axis.text(left + width + 0.008 if value >= 0 else left - 0.008,
+                  y + bar_height / 2, f"{value:.3f}",
+                  ha="left" if value >= 0 else "right", va="center",
+                  fontsize=13, color="#27343b")
+    axis.plot([zero, zero], [bottom - 0.01, top + 0.01], color="#333333", linewidth=0.8)
+    fig.tight_layout()
+    fig.savefig(figures_dir / "feature_importance.png", dpi=160)
+    plt.close(fig)
+
+
+def save_label_distribution_plot(
+    data: pd.DataFrame, figures_dir: Path
+) -> None:
+    tier_order = ["top_3", "page_1", "striking", "page_3_5", "deep"]
+    frame = data[data["position_tier"].isin(tier_order)].copy()
+    frame["label_status"] = np.select(
+        [
+            ~frame["label_eligible"],
+            frame["target"].eq(1),
+        ],
+        ["unqualified", "positive"],
+        default="negative",
+    )
+    counts = (
+        frame.groupby(["position_tier", "label_status"])
+        .size()
+        .unstack(fill_value=0)
+        .reindex(index=tier_order, fill_value=0)
+        .reindex(columns=["positive", "negative", "unqualified"], fill_value=0)
+    )
+    fig, axis = plt.subplots(figsize=(9.6, 5.2), dpi=100)
+    axis.set_xlim(0, 1)
+    axis.set_ylim(0, 1)
+    axis.axis("off")
+    axis.text(0.5, 0.94, "Label distribution by position tier", ha="center",
+              va="center", fontsize=24, color="#16232a")
+    maximum = max(float(counts.sum(axis=1).max()), 1)
+    colors = {"positive": "#59A14F", "negative": "#E15759", "unqualified": "#BAB0AC"}
+    top, bottom = 0.82, 0.17
+    step = (top - bottom) / max(len(counts), 1)
+    bar_height = min(0.10, step * 0.70)
+    for index, (tier, row) in enumerate(counts.iterrows()):
+        y = top - index * step - bar_height / 2
+        axis.text(0.29, y + bar_height / 2, str(tier), ha="right", va="center",
+                  fontsize=13, color="#27343b")
+        left = 0.31
+        for status in ["positive", "negative", "unqualified"]:
+            value = float(row[status])
+            width = 0.76 * value / maximum
+            axis.barh(y + bar_height / 2, width, left=left, height=bar_height,
+                      color=colors[status], edgecolor="none")
+            if value and width >= 0.08:
+                axis.text(left + width / 2, y + bar_height / 2, f"{value:,.0f}",
+                          ha="center", va="center", fontsize=10, color="white")
+            left += width
+    handles = [
+        plt.Rectangle((0, 0), 1, 1, color=colors[status])
+        for status in ["positive", "negative", "unqualified"]
+    ]
+    axis.legend(handles, ["positive", "negative", "unqualified"],
+                loc="lower center", bbox_to_anchor=(0.59, 0.03), ncol=3,
+                frameon=False, fontsize=11)
+    fig.tight_layout()
+    fig.savefig(figures_dir / "label_distribution.png", dpi=160)
+    plt.close(fig)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the ML-08 model comparison.")
     parser.add_argument("--output-dir", default=str(OUTPUT_DIR))
@@ -89,7 +270,7 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     connection = connect()
-    _, model_data = load_contract(connection)
+    all_data, model_data = load_contract(connection)
     train, test = grouped_holdout(model_data)
 
     features = NUMERIC_FEATURES
@@ -325,6 +506,10 @@ def main() -> None:
         "queue_output": "work/outputs/ml08_model_queue.csv",
     }
     write_json(output_dir / "ml08_model_metrics.json", metrics_payload)
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    save_queue_figures(queue, FIGURES_DIR)
+    save_feature_importance_plot(feature_influence, FIGURES_DIR)
+    save_label_distribution_plot(all_data, FIGURES_DIR)
     report_lines = [
         "# ML-08 model comparison",
         "",
@@ -408,9 +593,9 @@ def main() -> None:
     (output_dir / "ml08_model_report.md").write_text(
         "\n".join(report_lines), encoding="utf-8"
     )
-    print(f"Wrote {output_dir / 'ml08_model_queue.csv'}")
-    print(f"Wrote {output_dir / 'ml08_model_metrics.json'}")
-    print(f"Wrote {output_dir / 'ml08_model_report.md'}")
+    print(f"Wrote {'ml08_model_queue.csv'}")
+    print(f"Wrote {'ml08_model_metrics.json'}")
+    print(f"Wrote {'ml08_model_report.md'}")
 
 
 if __name__ == "__main__":

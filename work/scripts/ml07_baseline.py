@@ -267,9 +267,9 @@ def main() -> None:
         ]
     )
     (output_dir / "ml07_baseline_report.md").write_text(report, encoding="utf-8")
-    print(f"Wrote {output_dir / 'ml07_baseline_queue.csv'}")
-    print(f"Wrote {output_dir / 'ml07_baseline_metrics.json'}")
-    print(f"Wrote {output_dir / 'ml07_baseline_report.md'}")
+    print(f"Wrote {'ml07_baseline_queue.csv'}")
+    print(f"Wrote {'ml07_baseline_metrics.json'}")
+    print(f"Wrote {'ml07_baseline_report.md'}")
 
 
 if __name__ == "__main__":

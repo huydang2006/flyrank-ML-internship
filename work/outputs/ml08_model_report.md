@@ -12,7 +12,7 @@
 | Model | P@10 | P@20 | P@50 | Macro P@50 | Correct@50 | Brier | Log loss |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | logistic_regression | 0.9000 | 0.9500 | 0.9400 | 0.6345 | 47.0 | 0.2013 | 0.5929 |
-| random_forest | 1.0000 | 1.0000 | 0.9200 | 0.6412 | 46.0 | 0.1880 | 0.5548 |
+| random_forest | 1.0000 | 1.0000 | 0.9200 | 0.6368 | 46.0 | 0.1880 | 0.5548 |
 | ml07_rule_baseline | 0.7000 | 0.7500 | 0.7200 | 0.5368 | 36.0 | n/a | n/a |
 
 Top false positives and false negatives at the fixed review budget:
@@ -52,14 +52,14 @@ Permutation feature influence on held-out average precision:
 
 | Feature | Mean score decrease | Standard deviation |
 |---|---:|---:|
-| `clicks_90d` | 0.159388 | 0.007597 |
-| `avg_position_feature` | 0.064422 | 0.003987 |
-| `impressions_90d` | 0.062813 | 0.005963 |
-| `engagement_available` | 0.015792 | 0.000488 |
-| `ga4_available_90d` | 0.001512 | 0.000290 |
-| `sessions_90d` | 0.000701 | 0.001044 |
-| `engaged_sessions_90d` | -0.000024 | 0.001518 |
-| `engagement_rate_feature` | -0.003232 | 0.001159 |
+| `clicks_90d` | 0.152153 | 0.003923 |
+| `impressions_90d` | 0.065729 | 0.008402 |
+| `avg_position_feature` | 0.064815 | 0.003392 |
+| `engagement_available` | 0.011494 | 0.002875 |
+| `sessions_90d` | 0.001000 | 0.000648 |
+| `ga4_available_90d` | 0.000165 | 0.000832 |
+| `engaged_sessions_90d` | -0.000217 | 0.000773 |
+| `engagement_rate_feature` | -0.003259 | 0.000788 |
 
 Leakage checks:
 
