@@ -14,6 +14,23 @@ METRICS_PATH = OUTPUT_DIR / "ml09_validation_metrics.json"
 QUEUE_PATH = OUTPUT_DIR / "ml08_model_queue.csv"
 PUBLIC_QUEUE_PATH = OUTPUT_DIR / "ml10_action_queue_public.csv"
 ACTION_MIX_PATH = FIGURES_DIR / "top50_action_mix.png"
+REQUIRED_PUBLIC_FIELDS = {
+    "rank",
+    "model_score",
+    "model_rank",
+    "baseline_score",
+    "baseline_rank",
+    "primary_reason_code",
+    "supporting_reason_codes",
+    "suggested_action",
+    "confidence_note",
+    "model_signal_codes",
+    "model_signal_note",
+    "impressions_90d",
+    "ctr_feature",
+    "expected_ctr_feature",
+    "error_type",
+}
 
 
 def export_public_queue() -> int:
@@ -30,6 +47,31 @@ def export_public_queue() -> int:
             writer.writerow({field: row[field] for field in fields})
             count += 1
     return count
+
+
+def validate_public_queue(metrics: dict) -> None:
+    leakage_checks = metrics["leakage_checks"]
+    if not all(leakage_checks.values()):
+        raise ValueError("Validation receipt contains a failed leakage check")
+
+    with PUBLIC_QUEUE_PATH.open(newline="", encoding="utf-8") as source:
+        reader = csv.DictReader(source)
+        fields = set(reader.fieldnames or [])
+        if fields != REQUIRED_PUBLIC_FIELDS:
+            raise ValueError("Public queue schema does not match the required fields")
+        rows = list(reader)
+
+    if not rows:
+        raise ValueError("Public queue is empty")
+    if any(row[field] == "" for row in rows for field in REQUIRED_PUBLIC_FIELDS):
+        raise ValueError("Public queue contains blank required fields")
+
+    ranks = [int(row["rank"]) for row in rows]
+    model_ranks = [int(row["model_rank"]) for row in rows]
+    if ranks != list(range(1, len(rows) + 1)):
+        raise ValueError("Public queue ranks are not consecutive")
+    if len(set(model_ranks)) != len(model_ranks):
+        raise ValueError("Public queue contains duplicate model ranks")
 
 
 def save_action_mix_plot() -> None:
@@ -68,8 +110,10 @@ def save_action_mix_plot() -> None:
 def main() -> None:
     metrics = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
     queue_rows = export_public_queue()
+    validate_public_queue(metrics)
     save_action_mix_plot()
-    print(f"Wrote {'ml10_action_queue_public.csv'}")
+    print(f"Wrote ml10_action_queue_public.csv ({queue_rows:,} rows)")
+    print("Public queue validation: PASS")
 
 
 if __name__ == "__main__":
