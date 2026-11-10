@@ -74,6 +74,17 @@ Five grouped seeds produced logistic-regression P@50 of 0.88–0.96; time-aware 
 produced 0.72–0.90. Error review found both false positives and false negatives near the review
 boundary, supporting human review of disagreements rather than automatic action.
 
+| Method | P@10 | P@20 | P@50 | Macro P@50 |
+|---|---:|---:|---:|---:|
+| Logistic regression | 0.90 | 0.95 | **0.94** | 0.63 |
+| Random forest | 1.00 | 1.00 | 0.92 | **0.64** |
+| ML-07 rule baseline | 0.70 | 0.75 | 0.72 | 0.54 |
+
+![Validation Precision@50](figures/validation_precision_at_50.png)
+
+*Figure 1. Logistic-regression Precision@50 across grouped and time-aware validation. The
+observed ranges are directional and should not be read as a guarantee for a future period.*
+
 ## 6. Interpretation
 
 The grouped holdout shows that the logistic-regression ranking model outperformed the rule
@@ -82,6 +93,21 @@ Macro P@50, so the learned model is not uniformly superior under every aggregati
 
 Permutation influence was largest for `clicks_90d`, followed by `impressions_90d` and
 `avg_position_feature`. This is ranking influence, not a causal explanation.
+
+![Feature influence](figures/feature_importance.png)
+
+*Figure 2. Observed permutation influence of the model inputs. Influence indicates ranking
+sensitivity, not feature causality or business impact.*
+
+![Threshold sensitivity](figures/threshold_sensitivity.png)
+
+*Figure 3. Sensitivity of validation results to the transparent baseline threshold. The
+threshold is a policy choice, not an optimized causal cutoff.*
+
+![Label distribution](figures/label_distribution.png)
+
+*Figure 4. Distribution of the observed future-window target used for evaluation; the
+eligible-population base rate is 0.5856.*
 
 ## 7. Recommendation
 
@@ -96,14 +122,32 @@ quality, or business impact from the score alone. Recheck base rate and P@50 eac
 thresholds when they move outside the validated range, and retrain only after a new time-aware
 evaluation preserves feature/label separation.
 
+![Top-50 action mix](figures/top50_action_mix.png)
+
+*Figure 5. Suggested actions among the first 50 queue rows. The mix describes review
+prioritization, not guaranteed outcomes.*
+
+![Reason-code mix](figures/reason_code_mix.png)
+
+*Figure 6. Observed reason-code coverage across the 2,904-row public queue. These codes
+summarize available signals and are not causal explanations.*
+
+![Confidence mix](figures/confidence_mix.png)
+
+*Figure 7. Confidence labels in the public queue. Most rows are medium or low confidence,
+supporting human review rather than automatic publishing.*
+
 ## 8. Reproducibility
 
-The pipeline uses the committed scripts and notebooks under `work/`, with warehouse access
-configured through `HF_TOKEN`. The feature window is 2026-01-01 through 2026-03-31 and the label
-window is 2026-04-01 through 2026-04-30. The grouped split uses seed 42 and a 20% test size.
+The pipeline uses the committed scripts and notebooks under `work/`. The feature window is
+2026-01-01 through 2026-03-31 and the label window is 2026-04-01 through 2026-04-30. The
+grouped split uses seed 42 and a 20% test size. Warehouse access requires the repository's
+configured `HF_TOKEN`; it is never stored in the repository.
 
 The committed ML-07, ML-08, and ML-09 metrics JSON files are the receipts for the reported
-results. The capstone notebook reads them rather than hard-coding a second source.
+results. The [capstone notebook](notebooks/capstone.ipynb) reads them rather than hard-coding a
+second source. The [ML-10 action playbook](outputs/ml10_action_playbook.md) documents the
+operational review rules.
 
 ## 9. Acknowledgments & data credit
 
@@ -112,3 +156,18 @@ Built on the FlyRank ML Internship dataset — <https://flyrank.ai>
 > Claims use observed, measured, directional, and decision-support language. No causal claims,
 > client-identifying details, raw queries, credentials, or unsupported search-engine claims are
 > included.
+
+## ML-12 closing package
+
+**Five-minute demo:** Explain the review decision and safety boundary; show the feature and label
+windows; compare the baseline and model at the fixed review budget; show the ranked queue and
+human-review checklist; close with validation ranges and limitations.
+
+**Social post:** Built a public-safe ranking aid for SEO review. Logistic regression reached
+observed grouped-holdout P@50 of 0.94 versus 0.72 for a transparent rule; time-aware validation
+ranged from 0.72 to 0.90. It prioritizes human review and does not claim that edits cause
+recovery.
+
+**Employer summary:** Built a reproducible CTR opportunity-scoring workflow on the FlyRank
+internship warehouse. Compared a transparent baseline with logistic regression using grouped and
+time-aware validation, leakage checks, public-safe exports, and an action playbook.

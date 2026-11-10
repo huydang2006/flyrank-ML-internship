@@ -28,6 +28,7 @@ work/
   scripts/              copied + modified pipeline pieces
   figures/              charts for your report
   capstone_report.md    your capstone write-up (start from the template)
+  docs/index.html       deployable paper page source
 ```
 
 ## Capstone
@@ -58,3 +59,6 @@ in Colab, straight from your repo):
 When your paper is deployed, put its exact URL in `../submission/paper_url.txt` (one line).
 ML-12 lives in your capstone notebook's closing markdown cells — it's the smallest card and
 the easiest to forget, which is exactly why it has a row here.
+
+The paper page source is `work/docs/index.html`. Its asset paths are relative to the `work/`
+folder so the page can be previewed from the repository and staged for static hosting.

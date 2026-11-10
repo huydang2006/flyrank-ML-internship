@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CTR Opportunity Scoring | FlyRank ML Internship</title>
+  <style>
+    :root { --ink: #17212b; --muted: #526170; --line: #d9e0e7; --accent: #245b8f; --soft: #f3f6f8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: #eef2f5; font: 16px/1.6 system-ui, -apple-system, Segoe UI, sans-serif; }
+    main { max-width: 980px; margin: 0 auto; padding: 32px 22px 64px; background: #fff; }
+    header { border-bottom: 3px solid var(--ink); margin-bottom: 28px; padding-bottom: 20px; }
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: 0 0 10px; }
+    h2 { color: var(--accent); margin: 34px 0 10px; line-height: 1.2; }
+    h3 { margin: 22px 0 8px; }
+    p { margin: 0 0 14px; }
+    .meta, .note, figcaption { color: var(--muted); font-size: .94rem; }
+    .abstract { background: var(--soft); border-left: 4px solid var(--accent); padding: 18px 20px; }
+    table { border-collapse: collapse; margin: 16px 0 22px; width: 100%; }
+    th, td { border-bottom: 1px solid var(--line); padding: 9px 10px; text-align: left; }
+    th { background: var(--soft); }
+    figure { margin: 24px 0; }
+    figure img { border: 1px solid var(--line); display: block; height: auto; max-width: 100%; width: 100%; }
+    figcaption { padding-top: 8px; }
+    code { background: var(--soft); padding: 1px 4px; }
+    a { color: var(--accent); }
+    footer { border-top: 1px solid var(--line); margin-top: 36px; padding-top: 18px; }
+    @media (min-width: 760px) {
+      .figure-grid { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; }
+      .figure-grid figure { margin: 12px 0; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="meta">FlyRank ML Internship · Lane 4 · 2026-11-07</p>
+    <h1>CTR / Engagement Opportunity Scoring</h1>
+    <p class="meta">A public-safe, human-review ranking aid for SEO and content specialists.</p>
+  </header>
+
+  <section class="abstract">
+    <h2>Abstract</h2>
+    <p>This study asks whether a transparent rule and a grouped client-holdout model can rank
+    visible pages that under-capture clicks relative to their search-position tier. It uses the
+    FlyRank internship warehouse, aggregating signals from 2026-01-01 through 2026-03-31 and
+    evaluating 2026-04-01 through 2026-04-30. Logistic regression is compared with a fixed
+    CTR-and-volume rule under the same client-disjoint split and top-50 review budget. On the
+    recorded holdout, logistic regression reached Precision@50 of 0.94 versus 0.72 for the rule;
+    time-aware validation ranged from 0.72 to 0.90. This is decision support for human review,
+    not a causal estimate or automated publishing system.</p>
+  </section>
+
+  <h2>1. Problem framing</h2>
+  <p>The supported decision is which visible pages under-capture clicks relative to others in the
+  same position tier and are worth review. The unit is one pseudonymized content item at the
+  2026-04-01 decision point, aggregated by client and content hash. The output is a ranked list
+  with reason codes, supporting signals, confidence notes, and suggested review actions.</p>
+  <p>A false positive spends scarce review capacity; a false negative leaves a potentially useful
+  candidate unseen. The queue prioritizes review and does not automate edits.</p>
+
+  <h2>2. Data safety</h2>
+  <p>The analysis uses the FlyRank internship warehouse release and its daily content-performance
+  fact table. Rows require at least 100 feature-window impressions and 100 label-window
+  impressions, plus a known position tier. Eight feature-window inputs are used:
+  <code>clicks_90d</code>, <code>impressions_90d</code>, <code>avg_position_feature</code>,
+  <code>sessions_90d</code>, <code>engaged_sessions_90d</code>,
+  <code>engagement_rate_feature</code>, <code>ga4_available_90d</code>, and
+  <code>engagement_available</code>.</p>
+  <p>Future-window fields, trend fields, product/provider flags, client IDs, and content IDs are
+  excluded from score inputs. Pseudonymous IDs are used only for joins and grouped splits. The
+  public queue omits client and content identifiers.</p>
+
+  <h2>3. Baseline and model</h2>
+  <p>The baseline flags feature CTR below 0.5% when feature impressions are at least 100 and a
+  valid position tier exists, then ranks by feature impressions. Logistic regression provides a
+  compact, inspectable ranking score. The target is 1 when future-window CTR is below half of the
+  feature-window position-tier expected CTR, subject to the volume floors.</p>
+  <p>Random forest is reported as a secondary comparison. None of the models use identifiers,
+  future fields, trend fields, or product/provider flags.</p>
+
+  <h2>4. Evaluation and results</h2>
+  <p>The primary split is grouped by client with seed 42 and a 20% test size: 87,846 training rows
+  across 33 clients and 2,904 held-out rows across 9 clients, with zero client overlap. The
+  eligible-population base rate was 0.5856.</p>
+  <table>
+    <caption class="meta">Same grouped holdout and fixed top-50 review budget.</caption>
+    <thead><tr><th>Method</th><th>P@10</th><th>P@20</th><th>P@50</th><th>Macro P@50</th></tr></thead>
+    <tbody>
+      <tr><td>Logistic regression</td><td>0.90</td><td>0.95</td><td><strong>0.94</strong></td><td>0.63</td></tr>
+      <tr><td>Random forest</td><td>1.00</td><td>1.00</td><td>0.92</td><td><strong>0.64</strong></td></tr>
+      <tr><td>ML-07 rule baseline</td><td>0.70</td><td>0.75</td><td>0.72</td><td>0.54</td></tr>
+    </tbody>
+  </table>
+  <p>Five grouped seeds produced logistic-regression P@50 of 0.88–0.96; time-aware validation
+  produced 0.72–0.90. Error review found false positives and false negatives near the review
+  boundary, supporting human review of disagreements.</p>
+
+  <div class="figure-grid">
+    <figure>
+      <img src="../figures/validation_precision_at_50.png" alt="Validation precision at review budget 50">
+      <figcaption>Observed model and rule Precision@50 across grouped and time-aware validation.
+      The ranges are directional, not a future guarantee.</figcaption>
+    </figure>
+    <figure>
+      <img src="../figures/label_distribution.png" alt="Label distribution by position tier">
+      <figcaption>Observed target distribution by position tier in the evaluated population.</figcaption>
+    </figure>
+  </div>
+
+  <h2>5. Interpretation</h2>
+  <p>Logistic regression outperformed the rule at the row-weighted top-50 budget, while random
+  forest had slightly higher client-balanced Macro P@50. The learned model is therefore not
+  uniformly superior under every aggregation. Permutation influence was largest for
+  <code>clicks_90d</code>, followed by <code>impressions_90d</code> and
+  <code>avg_position_feature</code>; this is ranking influence, not causality.</p>
+  <div class="figure-grid">
+    <figure>
+      <img src="../figures/feature_importance.png" alt="Top model feature influence">
+      <figcaption>Observed permutation mean score decrease for model inputs.</figcaption>
+    </figure>
+    <figure>
+      <img src="../figures/threshold_sensitivity.png" alt="Sensitivity to baseline CTR threshold">
+      <figcaption>Changing the transparent threshold changes queue size and observed precision.
+      The threshold remains a policy choice.</figcaption>
+    </figure>
+  </div>
+
+  <h2>6. Limitations</h2>
+  <ul>
+    <li>The grouped holdout is client-disjoint but not a randomized experiment.</li>
+    <li>Time-aware P@50 varied from 0.72 to 0.90, so performance may shift across periods.</li>
+    <li>The eligible population is filtered by future-window impressions.</li>
+    <li>The queue depends on measurable impressions, CTR, and position context.</li>
+    <li>Missing engagement data is a caution, not evidence of poor content.</li>
+    <li>The model ranks candidates; it does not infer intent or business impact.</li>
+  </ul>
+
+  <h2>7. Ranked recommendations</h2>
+  <ol>
+    <li>Review the first 50 rows per cycle, keeping reason and confidence fields together.</li>
+    <li>Confirm volume, CTR denominator, position context, title, snippet, intent, and technical status.</li>
+    <li>Prioritize title/meta and snippet review for high-volume, strong-position, low-CTR rows.</li>
+    <li>Record evidence and reviewer confidence, then re-measure after a defined window.</li>
+    <li>Recheck base rate and P@50 each period; retrain only after time-aware validation preserves
+    feature/label separation.</li>
+  </ol>
+  <p><strong>No-go:</strong> Do not auto-publish edits, use the queue for personnel evaluation,
+  or infer causality, intent, quality, or business impact from the score alone.</p>
+  <div class="figure-grid">
+    <figure>
+      <img src="../figures/top50_action_mix.png" alt="Suggested action mix at review budget 50">
+      <figcaption>Suggested actions among the first 50 queue rows; this is prioritization, not a guarantee.</figcaption>
+    </figure>
+    <figure>
+      <img src="../figures/reason_code_mix.png" alt="All refresh reason codes">
+      <figcaption>Reason-code coverage across the public queue; codes summarize observed signals.</figcaption>
+    </figure>
+    <figure>
+      <img src="../figures/confidence_mix.png" alt="Review queue confidence mix">
+      <figcaption>Most rows are medium or low confidence, supporting human review.</figcaption>
+    </figure>
+  </div>
+
+  <h2>8. Reproducibility</h2>
+  <p>The committed <a href="../notebooks/capstone.ipynb">capstone notebook</a> reads the
+  committed ML-07, ML-08, and ML-09 metric receipts. The
+  <a href="../outputs/ml10_action_playbook.md">ML-10 action playbook</a> documents review
+  rules. The grouped split uses seed 42 and a 20% test size. Warehouse access requires the
+  configured <code>HF_TOKEN</code>; it is never stored in the repository.</p>
+
+  <h2>9. Acknowledgments and data credit</h2>
+  <p>Built on the <a href="https://flyrank.ai">FlyRank ML Internship dataset</a>.</p>
+
+  <h2>ML-12 closing package</h2>
+  <p><strong>Five-minute demo:</strong> Explain the review decision and safety boundary; show the
+  windows and leakage checks; compare the baseline and model; show the queue and checklist; close
+  with validation ranges and limitations.</p>
+  <p><strong>Social post:</strong> Built a public-safe ranking aid for SEO review. Logistic
+  regression reached observed grouped-holdout P@50 of 0.94 versus 0.72 for a transparent rule;
+  time-aware validation ranged from 0.72 to 0.90. It prioritizes human review and does not claim
+  edits cause recovery.</p>
+  <p><strong>Employer summary:</strong> Built a reproducible CTR opportunity-scoring workflow on
+  the FlyRank internship warehouse. Compared a transparent baseline with logistic regression using
+  grouped and time-aware validation, leakage checks, public-safe exports, and an action playbook.</p>
+
+  <footer>
+    <p class="meta">Source report: <a href="../capstone_report.md">work/capstone_report.md</a> ·
+    Repository: <a href="https://github.com/huydang2006/flyrank-ML-internship">GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
